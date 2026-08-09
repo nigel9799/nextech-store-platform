@@ -1,0 +1,10 @@
+begin;
+drop policy if exists audit_logs_owner_admin_select on public.audit_logs;
+drop policy if exists tenant_users_member_or_owner_select on public.tenant_users;
+drop policy if exists profiles_self_update on public.profiles;
+drop policy if exists profiles_self_select on public.profiles;
+drop policy if exists tenant_domains_member_select on public.tenant_domains;
+drop policy if exists tenants_member_select on public.tenants;
+drop function if exists private.has_tenant_role(uuid, public.tenant_role[]);
+drop function if exists private.is_tenant_member(uuid);
+commit;

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=desktop-chromium
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run db:start
+      - run: npm run db:reset
+      - run: npm run test:db
+      - name: Rehearse documented rollbacks
+        shell: bash
+        run: |
+          source <(npx supabase status -o env)
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0003_rls_helpers.down.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0002_tenancy_identity.down.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0001_extensions_enums.down.sql
+          test "$(psql "$DB_URL" -Atc "select to_regclass('public.tenants') is null")" = "t"
+      - if: always()
+        run: npm run db:stop
