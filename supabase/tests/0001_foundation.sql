@@ -36,7 +36,7 @@ select ok(exists(select 1 from pg_policies where schemaname='public' and tablena
 select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='tenant_domains' and policyname='tenant_domains_member_select'), 'domain select policy exists');
 select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='profiles' and policyname='profiles_self_select'), 'profile select policy exists');
 select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='profiles' and policyname='profiles_self_update'), 'profile update policy exists');
-select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='tenant_users' and policyname='tenant_users_member_or_owner_select'), 'membership select policy exists');
+select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='tenant_users' and policyname='tenant_users_self_or_owner_select'), 'membership select policy exists');
 select ok(exists(select 1 from pg_policies where schemaname='public' and tablename='audit_logs' and policyname='audit_logs_owner_admin_select'), 'audit select policy exists');
 
 select ok(not has_table_privilege('anon', 'public.tenants', 'SELECT'), 'anon cannot read tenants');
@@ -56,11 +56,11 @@ values
   ('20000000-0000-0000-0000-000000000001', 'tenant-one', 'Tenant One'),
   ('20000000-0000-0000-0000-000000000002', 'tenant-two', 'Tenant Two');
 
-insert into public.tenant_users (tenant_id, user_id, role, status, joined_at)
+insert into public.tenant_users (tenant_id, user_id, role, status, joined_at, deactivated_at)
 values
-  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'owner', 'active', now()),
-  ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'catalogue_manager', 'active', now()),
-  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000003', 'enquiries_agent', 'suspended', null);
+  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'owner', 'active', now(), null),
+  ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'catalogue_manager', 'active', now(), null),
+  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000003', 'enquiries_agent', 'suspended', null, now());
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '10000000-0000-0000-0000-000000000001', true);

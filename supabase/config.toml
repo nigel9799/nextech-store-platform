@@ -25,6 +25,26 @@ site_url = "http://127.0.0.1:3000"
 additional_redirect_urls = ["http://localhost:3000/**", "http://127.0.0.1:3000/**"]
 enable_signup = false
 
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.email.template.invite]
+subject = "Your Nextech admin invitation"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Nextech admin password"
+content_path = "./supabase/templates/recovery.html"
+
+[local_smtp]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+admin_email = "admin@local.nextech.test"
+sender_name = "Nextech Local"
+
 [storage]
 enabled = true
 file_size_limit = "100MiB"

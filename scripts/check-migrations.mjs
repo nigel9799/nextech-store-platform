@@ -10,6 +10,9 @@ const expected = [
   "0001_extensions_enums.sql",
   "0002_tenancy_identity.sql",
   "0003_rls_helpers.sql",
+  "0004_auth_profile_membership.sql",
+  "0005_domain_and_auth_policies.sql",
+  "0006_membership_audit.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -41,6 +44,12 @@ for (const table of tenantTables) {
     !combined.includes(`alter table public.${table} force row level security`)
   ) {
     throw new Error(`Missing forced RLS for public.${table}`);
+  }
+}
+
+for (const table of tenantTables) {
+  if (!combined.includes(`create policy ${table}_aal2_restriction`)) {
+    throw new Error(`Missing restrictive AAL2 policy for public.${table}`);
   }
 }
 

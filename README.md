@@ -1,6 +1,6 @@
 # Nextech Store Platform
 
-Production foundation for Nextech Malta's runtime-ready white-label storefront. Milestone 1 establishes the standard Next.js/Vercel application, design tokens, local Supabase schema and RLS baseline, CI, and test harness. Storefront, authentication, admin, catalogue, and enquiry behavior intentionally remain outside this milestone.
+Production foundation for Nextech Malta's runtime-ready white-label storefront. Milestones 1 and 2 establish the standard application, tenant isolation, invitation-only administration, mandatory TOTP MFA, least-privilege staff roles, and local security test harness. Storefront, catalogue, and enquiry behavior intentionally remain outside the current milestone.
 
 ## Requirements
 
@@ -17,7 +17,14 @@ Copy-Item .env.example .env.local
 npm run db:start
 ```
 
-Use the API URL and publishable key printed by `supabase start`. The Milestone 1 page does not query Supabase, so it can also be viewed before local database configuration.
+For the admin login, create the clearly labelled local-only fixture accounts and `.env.local` after Supabase starts:
+
+```powershell
+npm run db:reset
+npm run auth:local:setup
+```
+
+This creates no remote account. The local owner is `owner@local.nextech.test` with password `Nextech-local-test-2026!`; the first sign-in requires an authenticator app. Local captured invitation and recovery emails are available at [http://127.0.0.1:54324](http://127.0.0.1:54324).
 
 ## Run
 
@@ -28,6 +35,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+Open [http://127.0.0.1:3000/admin/login](http://127.0.0.1:3000/admin/login) to test administration after local Auth setup.
+
 ## Verify
 
 ```powershell
@@ -36,6 +45,7 @@ npm run test:e2e
 npm run db:start
 npm run db:reset
 npm run test:db
+npm run test:e2e:auth
 ```
 
 `npm run verify` checks formatting, lint, TypeScript, unit tests, migration structure/RLS declarations, secret boundaries, and the production build. Database tests require Docker because Supabase runs Postgres locally in containers.
@@ -47,4 +57,8 @@ npm run test:db
 - pgTAP tests live in `supabase/tests`.
 - Schema changes must be made through versioned migrations, not dashboard-only edits.
 
-Milestone 1 does not create or modify any remote Supabase, Vercel, DNS, Resend, Turnstile, or production resource.
+The local fixture script refuses non-local Supabase URLs. No workflow in Milestone 2 creates or modifies a remote Supabase, Vercel, DNS, Resend, Turnstile, or production resource.
+
+## Production inputs still required
+
+Before a later staging/production milestone, the owner must provide the initial owner and recovery-owner email addresses, staff invitations and roles, approved admin/staging domains, Auth redirect URLs, and Resend-backed Supabase Auth SMTP. Never reuse the local fixture emails or passwords.

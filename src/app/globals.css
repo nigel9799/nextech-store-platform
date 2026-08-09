@@ -31,6 +31,10 @@ select {
   font: inherit;
 }
 
+a {
+  color: inherit;
+}
+
 :focus-visible {
   outline: 2px solid var(--nextech-cyan);
   outline-offset: 3px;
@@ -261,6 +265,452 @@ select {
   .foundation-card {
     right: 4%;
     bottom: 4%;
+  }
+}
+
+.auth-shell {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(360px, 42%) 1fr;
+  background: #eef1f0;
+  color: #111718;
+}
+.auth-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8vw;
+  overflow: hidden;
+  background:
+    linear-gradient(rgb(37 144 164 / 9%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(37 144 164 / 9%) 1px, transparent 1px),
+    radial-gradient(circle at 70% 30%, rgb(37 144 164 / 24%), transparent 35%),
+    #050708;
+  background-size:
+    42px 42px,
+    42px 42px,
+    auto,
+    auto;
+  color: white;
+}
+.auth-brand-mark,
+.admin-logo strong {
+  color: var(--nextech-cyan);
+  font-weight: 900;
+  letter-spacing: -0.12em;
+}
+.auth-brand-mark {
+  font-size: 56px;
+}
+.auth-brand p,
+.auth-brand small {
+  color: #91a0a3;
+}
+.auth-brand h1 {
+  max-width: 550px;
+  margin: 16px 0;
+  font-size: clamp(44px, 6vw, 84px);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+.auth-panel {
+  display: grid;
+  place-items: center;
+  padding: 48px 6vw;
+}
+.auth-card {
+  width: min(100%, 470px);
+}
+.auth-card h2 {
+  margin: 10px 0 28px;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.admin-eyebrow {
+  margin: 0;
+  color: #647276;
+  font:
+    700 10px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.admin-form {
+  display: grid;
+  gap: 10px;
+}
+.admin-form label,
+.member-invite label {
+  margin-top: 8px;
+  color: #354145;
+  font-size: 12px;
+  font-weight: 700;
+}
+.admin-form input,
+.member-invite input,
+.member-invite select,
+.member-update select {
+  min-height: 46px;
+  border: 1px solid #bec8ca;
+  border-radius: 0;
+  background: white;
+  color: #101516;
+  padding: 10px 12px;
+}
+.admin-button,
+.member-update button {
+  min-height: 45px;
+  border: 1px solid #0b1112;
+  border-radius: 0;
+  background: #091011;
+  color: white;
+  padding: 10px 18px;
+  font:
+    700 11px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.admin-button {
+  margin-top: 14px;
+}
+.admin-button:hover,
+.member-update button:hover {
+  background: var(--nextech-primary);
+}
+.admin-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.auth-links {
+  margin-top: 20px;
+  font-size: 13px;
+}
+.auth-links a {
+  color: #16758a;
+}
+.auth-help {
+  margin-top: 28px;
+  color: #677477;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.form-notice {
+  padding: 12px 14px;
+  border-left: 3px solid var(--nextech-primary);
+  background: #dce9eb;
+  color: #213236;
+}
+.form-notice-error {
+  border-color: #c54545;
+  background: #f7e3e3;
+  color: #6e2020;
+}
+.mfa-qr {
+  display: block;
+  border: 10px solid white;
+  box-shadow: 0 0 0 1px #c5cdcf;
+}
+.mfa-secret {
+  display: block;
+  overflow-wrap: anywhere;
+  margin: 8px 0;
+  padding: 10px;
+  background: #e5eaea;
+}
+
+.admin-shell {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: var(--nextech-admin-sidebar) 1fr;
+  background: var(--nextech-canvas);
+  color: #111718;
+}
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 20px;
+  background: #080c0e;
+  color: #f5f8f8;
+}
+.admin-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font:
+    700 12px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.16em;
+}
+.admin-logo strong {
+  font-size: 28px;
+}
+.admin-sidebar nav {
+  display: grid;
+  gap: 5px;
+  margin-top: 58px;
+}
+.admin-sidebar nav a {
+  padding: 12px;
+  border-left: 2px solid transparent;
+  color: #aeb8ba;
+  text-decoration: none;
+  font-size: 13px;
+}
+.admin-sidebar nav a:hover {
+  border-color: var(--nextech-primary);
+  background: #111719;
+  color: white;
+}
+.admin-sidebar-foot {
+  display: grid;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #253034;
+}
+.admin-sidebar-foot span {
+  color: var(--nextech-cyan);
+  font:
+    700 10px var(--font-geist-mono),
+    monospace;
+  text-transform: uppercase;
+}
+.admin-sidebar-foot small {
+  overflow-wrap: anywhere;
+  color: #899598;
+}
+.admin-sidebar-foot button {
+  border: 0;
+  background: transparent;
+  color: white;
+  padding: 8px 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.admin-workspace {
+  min-width: 0;
+}
+.admin-topbar {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  border-bottom: 1px solid #d5dcdd;
+  background: white;
+}
+.admin-topbar div {
+  display: grid;
+}
+.admin-topbar small,
+.admin-topbar span {
+  color: #687579;
+  font:
+    700 9px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.14em;
+}
+.admin-main {
+  padding: 42px clamp(20px, 4vw, 64px) 70px;
+}
+.admin-heading h1 {
+  margin: 10px 0;
+  font-size: clamp(36px, 5vw, 62px);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+.admin-heading > p:last-child {
+  color: #647175;
+}
+.admin-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 38px;
+  border: 1px solid #cad2d3;
+  background: #cad2d3;
+}
+.admin-status-grid article {
+  display: grid;
+  gap: 8px;
+  padding: 25px;
+  background: white;
+}
+.admin-status-grid small {
+  color: #687579;
+  font:
+    700 9px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.15em;
+}
+.admin-status-grid strong {
+  font-size: 20px;
+}
+.admin-status-grid span {
+  color: #778286;
+  font-size: 12px;
+}
+.admin-placeholder,
+.admin-panel {
+  margin-top: 26px;
+  padding: 26px;
+  border: 1px solid #ccd4d5;
+  background: white;
+}
+.admin-placeholder p {
+  color: #657174;
+}
+.admin-panel h2 {
+  margin-top: 0;
+}
+.member-invite {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 220px auto;
+  gap: 12px;
+  align-items: end;
+}
+.member-invite label {
+  grid-row: 1;
+}
+.member-invite input,
+.member-invite select,
+.member-invite button {
+  grid-row: 2;
+}
+.admin-table-wrap {
+  overflow-x: auto;
+}
+.admin-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.admin-panel th,
+.admin-panel td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #d8dede;
+  text-align: left;
+  vertical-align: middle;
+}
+.admin-panel th {
+  color: #687579;
+  font:
+    700 9px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.12em;
+}
+.member-update {
+  display: flex;
+  gap: 7px;
+  min-width: 430px;
+}
+.member-update select {
+  min-height: 37px;
+  padding: 6px 8px;
+}
+.member-update button {
+  min-height: 37px;
+}
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: capitalize;
+}
+.status-dot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: #899497;
+}
+.status-active::before {
+  background: #22805f;
+}
+.status-suspended::before {
+  background: #c44c4c;
+}
+.status-invited::before {
+  background: #c28b2d;
+}
+
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+  .auth-brand {
+    min-height: 270px;
+    padding: 50px 8vw;
+  }
+  .auth-brand h1 {
+    font-size: 48px;
+  }
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    position: relative;
+    height: auto;
+    padding: 18px 20px;
+    flex-direction: row;
+    align-items: center;
+    gap: 22px;
+  }
+  .admin-sidebar nav {
+    display: flex;
+    margin: 0;
+  }
+  .admin-sidebar-foot {
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+  }
+  .admin-sidebar-foot small,
+  .admin-sidebar-foot span {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-panel {
+    padding: 38px 22px;
+  }
+  .auth-brand {
+    min-height: 220px;
+  }
+  .auth-brand h1 {
+    font-size: 39px;
+  }
+  .admin-sidebar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .admin-sidebar nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .admin-topbar {
+    padding: 0 20px;
+  }
+  .admin-status-grid {
+    grid-template-columns: 1fr;
+  }
+  .member-invite {
+    grid-template-columns: 1fr;
+  }
+  .member-invite label,
+  .member-invite input,
+  .member-invite select,
+  .member-invite button {
+    grid-row: auto;
   }
 }
 

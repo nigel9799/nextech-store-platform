@@ -34,10 +34,15 @@ jobs:
       - run: npm run db:start
       - run: npm run db:reset
       - run: npm run test:db
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e:auth
       - name: Rehearse documented rollbacks
         shell: bash
         run: |
           source <(npx supabase status -o env)
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0006_membership_audit.down.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0005_domain_and_auth_policies.down.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0004_auth_profile_membership.down.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0003_rls_helpers.down.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0002_tenancy_identity.down.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f supabase/rollbacks/0001_extensions_enums.down.sql
