@@ -141,3 +141,7 @@ console.log("Local-only authentication fixtures are ready.");
 console.log("Owner: owner@local.nextech.test");
 console.log("Password: Nextech-local-test-2026!");
 console.log("Mailpit: http://127.0.0.1:54324");
+
+execFileSync(process.execPath, ["scripts/seed-local-storefront.mjs"], {
+  stdio: "inherit",
+});

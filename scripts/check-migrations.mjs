@@ -14,6 +14,7 @@ const expected = [
   "0005_domain_and_auth_policies.sql",
   "0006_membership_audit.sql",
   "0007_defer_mfa.sql",
+  "0008_storefront_catalogue.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -33,6 +34,13 @@ const tenantTables = [
   "profiles",
   "tenant_users",
   "audit_logs",
+  "site_settings",
+  "navigation_items",
+  "content_sections",
+  "legal_pages",
+  "product_categories",
+  "products",
+  "product_images",
 ];
 
 for (const table of tenantTables) {
@@ -52,7 +60,13 @@ const mfaDeferral = await readFile(
   path.join(migrationDirectory, "0007_defer_mfa.sql"),
   "utf8",
 );
-for (const table of tenantTables) {
+for (const table of [
+  "tenants",
+  "tenant_domains",
+  "profiles",
+  "tenant_users",
+  "audit_logs",
+]) {
   if (
     !mfaDeferral.includes(`drop policy if exists ${table}_aal2_restriction`)
   ) {

@@ -1,15 +1,32 @@
 import { render, screen } from "@testing-library/react";
-import FoundationPage from "./page";
+import { StorefrontShell } from "@/components/storefront/storefront-shell";
+import {
+  defaultStorefrontCategories,
+  defaultStorefrontConfig,
+  developmentSeedProducts,
+} from "@/lib/storefront/defaults";
 
-describe("foundation page", () => {
-  it("identifies the approved milestone without claiming later features", () => {
-    render(<FoundationPage />);
-    expect(
-      screen.getByRole("heading", {
-        name: /production\s*foundation ready/i,
-      }),
-    ).toBeVisible();
-    expect(screen.getByText("01 / Foundation")).toBeVisible();
-    expect(screen.queryByText(/checkout/i)).not.toBeInTheDocument();
+/* eslint-disable @next/next/no-img-element */
+vi.mock("next/image", () => ({
+  default: (props: Record<string, unknown>) => {
+    const { priority, ...rest } = props;
+    void priority;
+    return <img alt="" {...rest} />;
+  },
+}));
+/* eslint-enable @next/next/no-img-element */
+
+describe("storefront page", () => {
+  it("renders the approved catalogue without later commerce features", () => {
+    render(
+      <StorefrontShell
+        config={defaultStorefrontConfig}
+        categories={defaultStorefrontCategories}
+        products={developmentSeedProducts}
+      />,
+    );
+    expect(document.querySelector("#hero-title")).toBeVisible();
+    expect(screen.getAllByText("Prebuilt PCs").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Milestone 5/i)).toBeVisible();
   });
 });

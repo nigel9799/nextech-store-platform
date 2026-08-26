@@ -1,9 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test("renders the responsive production foundation", async ({ page }) => {
+test("renders the responsive Nextech storefront", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("#hero-title")).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /production foundation ready/i }),
+    page.getByText("Free Malta delivery on orders over €100"),
   ).toBeVisible();
-  await expect(page.getByText("Local development only")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Admin login" })).toHaveAttribute(
+    "href",
+    "/admin",
+  );
 });
