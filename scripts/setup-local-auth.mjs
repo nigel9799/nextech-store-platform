@@ -97,14 +97,6 @@ for (const fixture of fixtures) {
     if (updated.error) throw updated.error;
   }
 
-  const factors = await service.auth.admin.mfa.listFactors({ userId: user.id });
-  for (const factor of factors.data?.factors ?? []) {
-    await service.auth.admin.mfa.deleteFactor({
-      userId: user.id,
-      id: factor.id,
-    });
-  }
-
   const membership = await service
     .from("tenant_users")
     .select("id")

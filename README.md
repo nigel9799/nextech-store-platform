@@ -1,6 +1,6 @@
 # Nextech Store Platform
 
-Production foundation for Nextech Malta's runtime-ready white-label storefront. Milestones 1 and 2 establish the standard application, tenant isolation, invitation-only administration, mandatory TOTP MFA, least-privilege staff roles, and local security test harness. Storefront, catalogue, and enquiry behavior intentionally remain outside the current milestone.
+Production foundation for Nextech Malta's runtime-ready white-label storefront. Milestones 1 and 2 establish the standard application, tenant isolation, invitation-only password administration, least-privilege staff roles, and secure membership management. Storefront, catalogue, and enquiry behavior intentionally remain outside the current milestone.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ npm run db:reset
 npm run auth:local:setup
 ```
 
-This creates no remote account. The local owner is `owner@local.nextech.test` with password `Nextech-local-test-2026!`; the first sign-in requires an authenticator app. Local captured invitation and recovery emails are available at [http://127.0.0.1:54324](http://127.0.0.1:54324).
+This creates no remote account. The local owner is `owner@local.nextech.test` with password `Nextech-local-test-2026!`. Local captured invitation and recovery emails are available at [http://127.0.0.1:54324](http://127.0.0.1:54324).
 
 ## Run
 
@@ -62,3 +62,5 @@ The local fixture script refuses non-local Supabase URLs. No workflow in Milesto
 ## Production inputs still required
 
 Before a later staging/production milestone, the owner must provide the initial owner and recovery-owner email addresses, staff invitations and roles, approved admin/staging domains, Auth redirect URLs, and Resend-backed Supabase Auth SMTP. Never reuse the local fixture emails or passwords.
+
+MFA is intentionally deferred while password-only development testing is completed. It must be reconsidered, threat-modelled, and explicitly approved as a security feature before any production launch.

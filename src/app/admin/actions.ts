@@ -31,11 +31,7 @@ export async function loginAction(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) redirect("/admin/login?error=invalid");
-
-  const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  redirect(
-    data?.nextLevel === "aal2" ? "/admin/mfa/challenge" : "/admin/mfa/enroll",
-  );
+  redirect("/admin");
 }
 
 export async function requestPasswordResetAction(formData: FormData) {
@@ -61,7 +57,7 @@ export async function updatePasswordAction(formData: FormData) {
   const { supabase } = await requireAuthenticatedUser();
   const { error } = await supabase.auth.updateUser({ password: parsed.data });
   if (error) redirect("/admin/update-password?error=failed");
-  redirect("/admin/mfa/enroll");
+  redirect("/admin");
 }
 
 export async function logoutAction() {

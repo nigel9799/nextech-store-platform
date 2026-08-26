@@ -13,6 +13,7 @@ const expected = [
   "0004_auth_profile_membership.sql",
   "0005_domain_and_auth_policies.sql",
   "0006_membership_audit.sql",
+  "0007_defer_mfa.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -47,10 +48,19 @@ for (const table of tenantTables) {
   }
 }
 
+const mfaDeferral = await readFile(
+  path.join(migrationDirectory, "0007_defer_mfa.sql"),
+  "utf8",
+);
 for (const table of tenantTables) {
-  if (!combined.includes(`create policy ${table}_aal2_restriction`)) {
-    throw new Error(`Missing restrictive AAL2 policy for public.${table}`);
+  if (
+    !mfaDeferral.includes(`drop policy if exists ${table}_aal2_restriction`)
+  ) {
+    throw new Error(`Missing deferred MFA policy removal for public.${table}`);
   }
+}
+if (!mfaDeferral.includes("drop function if exists private.is_aal2()")) {
+  throw new Error("Missing deferred MFA assurance helper removal");
 }
 
 for (const migration of files) {

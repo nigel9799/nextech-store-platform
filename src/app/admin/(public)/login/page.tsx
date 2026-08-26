@@ -38,7 +38,7 @@ export default async function LoginPage({
           required
         />
         <button className="admin-button" type="submit">
-          Continue to verification
+          Sign in
         </button>
       </form>
       <div className="auth-links">

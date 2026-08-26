@@ -409,19 +409,6 @@ a {
   background: #f7e3e3;
   color: #6e2020;
 }
-.mfa-qr {
-  display: block;
-  border: 10px solid white;
-  box-shadow: 0 0 0 1px #c5cdcf;
-}
-.mfa-secret {
-  display: block;
-  overflow-wrap: anywhere;
-  margin: 8px 0;
-  padding: 10px;
-  background: #e5eaea;
-}
-
 .admin-shell {
   min-height: 100svh;
   display: grid;

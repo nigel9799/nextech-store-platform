@@ -36,7 +36,7 @@ export default async function SecureAdminLayout({
             <small>TENANT</small>
             <strong>{context.tenant.businessName}</strong>
           </div>
-          <span>MFA · AAL2</span>
+          <span>PASSWORD AUTHENTICATED</span>
         </header>
         <main className="admin-main">{children}</main>
       </div>

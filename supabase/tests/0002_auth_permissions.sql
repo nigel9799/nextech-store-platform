@@ -1,8 +1,13 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(22);
 
-select ok(to_regprocedure('private.is_aal2()') is not null, 'AAL2 helper exists');
+select ok(to_regprocedure('private.is_aal2()') is null, 'MFA assurance helper is absent while MFA is deferred');
+select ok(not exists(select 1 from pg_policies where schemaname = 'public' and tablename = 'tenants' and policyname = 'tenants_aal2_restriction'), 'tenant MFA restriction is absent while MFA is deferred');
+select ok(not exists(select 1 from pg_policies where schemaname = 'public' and tablename = 'tenant_domains' and policyname = 'tenant_domains_aal2_restriction'), 'domain MFA restriction is absent while MFA is deferred');
+select ok(not exists(select 1 from pg_policies where schemaname = 'public' and tablename = 'profiles' and policyname = 'profiles_aal2_restriction'), 'profile MFA restriction is absent while MFA is deferred');
+select ok(not exists(select 1 from pg_policies where schemaname = 'public' and tablename = 'tenant_users' and policyname = 'tenant_users_aal2_restriction'), 'membership MFA restriction is absent while MFA is deferred');
+select ok(not exists(select 1 from pg_policies where schemaname = 'public' and tablename = 'audit_logs' and policyname = 'audit_logs_aal2_restriction'), 'audit MFA restriction is absent while MFA is deferred');
 select ok(to_regprocedure('private.normalize_hostname(text)') is not null, 'hostname helper exists');
 select ok(exists(select 1 from pg_trigger where tgname = 'auth_user_profile_created'), 'Auth profile trigger exists');
 select ok(exists(select 1 from pg_trigger where tgname = 'tenant_users_keep_owner'), 'last owner trigger exists');
@@ -30,20 +35,13 @@ values
   ('40000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000004', 'owner', 'active', now());
 
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000001","role":"authenticated","aal":"aal1"}', true);
-select is((select count(*)::integer from public.tenants), 0, 'AAL1 cannot read admin tenant data');
-update public.tenant_users set role = 'administrator' where user_id = '30000000-0000-0000-0000-000000000003';
-reset role;
-select is((select role::text from public.tenant_users where user_id = '30000000-0000-0000-0000-000000000003'), 'catalogue_manager', 'AAL1 cannot mutate memberships');
-
-set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000001","role":"authenticated","aal":"aal2"}', true);
-select is((select count(*)::integer from public.tenants), 1, 'AAL2 member sees own tenant');
-select is((select count(*)::integer from public.tenants where id = '40000000-0000-0000-0000-000000000002'), 0, 'AAL2 member cannot see another tenant');
+select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000001","role":"authenticated"}', true);
+select is((select count(*)::integer from public.tenants), 1, 'password-authenticated member sees own tenant');
+select is((select count(*)::integer from public.tenants where id = '40000000-0000-0000-0000-000000000002'), 0, 'password-authenticated member cannot see another tenant');
 select is((select count(*)::integer from public.tenant_users), 3, 'owner sees only own tenant memberships');
 select lives_ok($$update public.tenant_users set role = 'administrator' where user_id = '30000000-0000-0000-0000-000000000003'$$, 'owner can change a staff role');
 
-select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated","aal":"aal2"}', true);
+select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated"}', true);
 update public.tenant_users set status = 'suspended', deactivated_at = now() where user_id = '30000000-0000-0000-0000-000000000001';
 reset role;
 select is((select status::text from public.tenant_users where user_id = '30000000-0000-0000-0000-000000000001'), 'active', 'staff cannot change memberships');
@@ -51,7 +49,7 @@ select is((select status::text from public.tenant_users where user_id = '3000000
 update public.tenant_users set status = 'suspended', deactivated_at = now()
 where user_id = '30000000-0000-0000-0000-000000000003';
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated","aal":"aal2"}', true);
+select set_config('request.jwt.claims', '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated"}', true);
 select ok(not private.is_tenant_member('40000000-0000-0000-0000-000000000001'), 'suspended membership is revoked immediately');
 select is((select count(*)::integer from public.tenants), 0, 'suspended member loses tenant reads immediately');
 

@@ -16,7 +16,7 @@
 - Add positive same-tenant and negative cross-tenant/wrong-role/anonymous tests with every policy.
 - Normal admin writes use the authenticated Supabase client. Service-role use must be isolated, justified, and independently tenant-scoped.
 - Validate and authorize every Server Action and Route Handler; never rely on UI visibility for authorization.
-- Require AAL2 for admin mutations once Milestone 2 introduces Auth.
+- MFA/AAL2 is temporarily deferred for development. Reconsider and explicitly approve it as a security feature before production launch; do not enable or require it in the current milestone.
 - Store money as integer minor units and VAT rates as basis points. Nextech catalogue prices are VAT-inclusive final retail prices.
 - Never store business data in `localStorage` or expose secrets through `NEXT_PUBLIC_` variables.
 - Do not store or render unrestricted HTML. Validate links and uploaded MIME type, extension, and size.

@@ -24,7 +24,7 @@ export default async function AdminDashboard({
         <article>
           <small>AUTHENTICATION</small>
           <strong>Verified</strong>
-          <span>Password + TOTP</span>
+          <span>Secure password session</span>
         </article>
         <article>
           <small>ROLE</small>

@@ -15,7 +15,7 @@ export function AuthCard({
         <span className="auth-brand-mark">NX</span>
         <p>Secure administration</p>
         <h1>BUILT FOR CONTROL.</h1>
-        <small>Tenant-aware · MFA protected · Least privilege</small>
+        <small>Tenant-aware · Role protected · Least privilege</small>
       </section>
       <section className="auth-panel">
         <div className="auth-card">

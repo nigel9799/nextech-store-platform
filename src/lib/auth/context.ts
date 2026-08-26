@@ -23,16 +23,6 @@ export async function requireAdminContext(
 ): Promise<AdminContext> {
   const tenant = await resolveRequestTenant();
   const { supabase, user } = await requireAuthenticatedUser();
-  const { data: assurance, error: assuranceError } =
-    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-
-  if (assuranceError || assurance.currentLevel !== "aal2") {
-    redirect(
-      assurance?.nextLevel === "aal2"
-        ? "/admin/mfa/challenge"
-        : "/admin/mfa/enroll",
-    );
-  }
 
   const { data: membership } = await supabase
     .from("tenant_users")

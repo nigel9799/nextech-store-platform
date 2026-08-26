@@ -13,8 +13,8 @@ export default async function SetupPasswordPage({
   return (
     <AuthCard eyebrow="Invitation accepted" title="Create your password">
       <p>
-        Your account must use a strong password and authenticator app before
-        admin access is enabled.
+        Your invitation-only account must use a strong password before admin
+        access is enabled.
       </p>
       {query.error ? (
         <Notice type="error">
@@ -32,7 +32,7 @@ export default async function SetupPasswordPage({
           required
         />
         <button className="admin-button" type="submit">
-          Save and set up MFA
+          Save password
         </button>
       </form>
     </AuthCard>
