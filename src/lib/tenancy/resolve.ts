@@ -47,8 +47,14 @@ export async function resolveTenant(
     .eq("hostname", hostname)
     .not("verified_at", "is", null)
     .single();
-  if (domainError || !domain)
+  if (domainError || !domain) {
+    console.error("Tenant domain lookup failed", {
+      hostname,
+      code: domainError?.code,
+      message: domainError?.message,
+    });
     throw new TenantResolutionError("Unknown or unverified hostname");
+  }
 
   const { data: tenant, error: tenantError } = await supabase
     .from("tenants")
@@ -69,5 +75,7 @@ export async function resolveTenant(
 
 export async function resolveRequestTenant() {
   const requestHeaders = await headers();
-  return resolveTenant(requestHeaders.get("host") ?? "");
+  return resolveTenant(
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "",
+  );
 }

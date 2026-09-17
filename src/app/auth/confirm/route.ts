@@ -7,7 +7,11 @@ const acceptedTypes = new Set<EmailOtpType>(["invite", "recovery", "email"]);
 
 export async function GET(request: NextRequest) {
   try {
-    await resolveTenant(request.headers.get("host") ?? "");
+    await resolveTenant(
+      request.headers.get("x-forwarded-host") ??
+        request.headers.get("host") ??
+        "",
+    );
   } catch (error) {
     if (error instanceof TenantResolutionError) {
       return new NextResponse("Not found", { status: 404 });
