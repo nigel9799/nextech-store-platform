@@ -19,9 +19,16 @@ export async function GET(request: NextRequest) {
     throw error;
   }
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
+  const code = request.nextUrl.searchParams.get("code");
   const type = request.nextUrl.searchParams.get("type") as EmailOtpType | null;
   const requestedNext = request.nextUrl.searchParams.get("next");
   const next = requestedNext?.startsWith("/admin/") ? requestedNext : "/admin";
+
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) return NextResponse.redirect(new URL(next, request.url));
+  }
 
   if (tokenHash && type && acceptedTypes.has(type)) {
     const supabase = await createClient();
