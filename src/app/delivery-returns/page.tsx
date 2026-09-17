@@ -33,13 +33,10 @@ export default async function DeliveryReturnsPage() {
             <a href="mailto:info@nextechmt.com">info@nextechmt.com</a>
           </div>
         </div>
-        <p className="storefront-legal-review">
-          Development placeholder — professional legal review is required before
-          launch.
-        </p>
+        <p className="storefront-legal-review">Last updated September 2026.</p>
       </article>
       <footer>
-        <span>© 2026 Nextech Malta. Development storefront.</span>
+        <span>© 2026 Nextech Malta. All rights reserved.</span>
         <Link href="/">Return to storefront</Link>
       </footer>
     </main>
