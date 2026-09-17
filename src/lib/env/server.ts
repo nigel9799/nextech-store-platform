@@ -10,7 +10,8 @@ const serverEnvironmentSchema = z.object({
 
 export function getServerEnvironment() {
   const values = serverEnvironmentSchema.parse({
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY:
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY,
     APP_ENV: process.env.APP_ENV,
     DEFAULT_TENANT_SLUG: process.env.DEFAULT_TENANT_SLUG,
     AUTH_REDIRECT_BASE_URL: process.env.AUTH_REDIRECT_BASE_URL,
