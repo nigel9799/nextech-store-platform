@@ -34,7 +34,21 @@ function formatPrice(minor: number, currencyCode: string) {
   }).format(minor / 100);
 }
 
-function ProductVisual({ categorySlug }: { categorySlug: string }) {
+function ProductVisual({ product }: { product: StorefrontProduct }) {
+  const { categorySlug } = product;
+  if (product.imageUrl) {
+    return (
+      <span className="product-visual product-visual-image">
+        <Image
+          src={product.imageUrl}
+          alt={product.imageAlt ?? product.name}
+          fill
+          sizes="(max-width: 700px) 76vw, 320px"
+          unoptimized
+        />
+      </span>
+    );
+  }
   const visual = categorySlug.includes("graphic")
     ? "gpu"
     : categorySlug.includes("processor") || categorySlug.includes("mother")
@@ -73,6 +87,12 @@ export function StorefrontShell({
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [contactNotice, setContactNotice] = useState("");
+  const whatsappNumber = config.contact.phoneOne.replace(/\D/g, "");
+
+  function openWhatsApp(lines: string[]) {
+    const message = encodeURIComponent(lines.join("\n"));
+    window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+  }
 
   useEffect(() => {
     if (!cartOpen && !menuOpen) return;
@@ -324,7 +344,7 @@ export function StorefrontShell({
                     <button type="button" aria-label={`Save ${product.name}`}>
                       ♡
                     </button>
-                    <ProductVisual categorySlug={product.categorySlug} />
+                    <ProductVisual product={product} />
                     <small>
                       NEXTECH / {product.categoryName.toUpperCase()}
                     </small>
@@ -451,9 +471,17 @@ export function StorefrontShell({
           className="storefront-contact-form"
           onSubmit={(event) => {
             event.preventDefault();
-            setContactNotice(
-              "Contact submissions will be enabled in Milestone 5.",
-            );
+            const form = new FormData(event.currentTarget);
+            setContactNotice("Opening WhatsApp with your enquiry…");
+            openWhatsApp([
+              "Hello Nextech, I would like some help.",
+              `Name: ${String(form.get("name") ?? "")}`,
+              `Email: ${String(form.get("email") ?? "")}`,
+              `Phone: ${String(form.get("phone") ?? "Not supplied")}`,
+              `Enquiry: ${String(form.get("interest") ?? "")}`,
+              `Budget: ${String(form.get("budget") ?? "Not supplied")}`,
+              `Message: ${String(form.get("message") ?? "")}`,
+            ]);
           }}
           aria-describedby="storefront-contact-helper"
         >
@@ -614,7 +642,7 @@ export function StorefrontShell({
                   className="storefront-cart-item"
                   key={`${product.id}-${index}`}
                 >
-                  <ProductVisual categorySlug={product.categorySlug} />
+                  <ProductVisual product={product} />
                   <div>
                     <b>{product.name}</b>
                     <span>
@@ -637,10 +665,23 @@ export function StorefrontShell({
                 <b>{formatPrice(cartTotal, cart[0].currencyCode)}</b>
               </p>
               <small>
-                No payment is taken online. Cart enquiries will be enabled in
-                Milestone 5.
+                No payment is taken online. Nextech will confirm availability,
+                delivery and payment with you.
               </small>
-              <button type="button" disabled>
+              <button
+                type="button"
+                onClick={() =>
+                  openWhatsApp([
+                    "Hello Nextech, I would like to enquire about this cart:",
+                    ...cart.map(
+                      (product, index) =>
+                        `${index + 1}. ${product.name} — ${formatPrice(product.priceMinor, product.currencyCode)}`,
+                    ),
+                    `Estimated total: ${formatPrice(cartTotal, cart[0].currencyCode)}`,
+                    "Please confirm availability and the next steps.",
+                  ])
+                }
+              >
                 {config.cart.enquiryLabel} →
               </button>
             </div>

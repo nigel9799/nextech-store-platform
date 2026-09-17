@@ -17,7 +17,7 @@ vi.mock("next/image", () => ({
 /* eslint-enable @next/next/no-img-element */
 
 describe("storefront page", () => {
-  it("renders the approved catalogue without later commerce features", () => {
+  it("renders the catalogue and launch enquiry guidance", () => {
     render(
       <StorefrontShell
         config={defaultStorefrontConfig}
@@ -27,6 +27,6 @@ describe("storefront page", () => {
     );
     expect(document.querySelector("#hero-title")).toBeVisible();
     expect(screen.getAllByText("Prebuilt PCs").length).toBeGreaterThan(0);
-    expect(screen.getByText(/Milestone 5/i)).toBeVisible();
+    expect(screen.getByText(/opens WhatsApp/i)).toBeVisible();
   });
 });

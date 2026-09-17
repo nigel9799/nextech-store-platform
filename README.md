@@ -1,6 +1,6 @@
 # Nextech Store Platform
 
-Production foundation for Nextech Malta's runtime-ready white-label storefront. Milestones 1 and 2 establish the standard application, tenant isolation, invitation-only password administration, least-privilege staff roles, and secure membership management. Storefront, catalogue, and enquiry behavior intentionally remain outside the current milestone.
+Launch-ready catalogue and enquiry store for Nextech Malta. The application includes a responsive storefront, tenant-scoped administration, product and category management, essential brand settings and WhatsApp-based cart enquiries. Online payment is intentionally deferred.
 
 ## Requirements
 
@@ -37,6 +37,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Open [http://127.0.0.1:3000/admin/login](http://127.0.0.1:3000/admin/login) to test administration after local Auth setup.
 
+Catalogue administration is available at:
+
+- `/admin/catalogue/products`
+- `/admin/catalogue/categories`
+- `/admin/settings`
+
+See [`docs/simple-launch.md`](docs/simple-launch.md) for the production launch checklist.
+
 ## Verify
 
 ```powershell
@@ -63,4 +71,4 @@ The local fixture script refuses non-local Supabase URLs. No workflow in Milesto
 
 Before a later staging/production milestone, the owner must provide the initial owner and recovery-owner email addresses, staff invitations and roles, approved admin/staging domains, Auth redirect URLs, and Resend-backed Supabase Auth SMTP. Never reuse the local fixture emails or passwords.
 
-MFA is intentionally deferred while password-only development testing is completed. It must be reconsidered, threat-modelled, and explicitly approved as a security feature before any production launch.
+MFA remains deferred for the simple launch and should be enabled as the first security upgrade after the initial production release. Use a unique strong owner password and do not reuse the local fixture credentials.

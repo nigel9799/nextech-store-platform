@@ -97,6 +97,15 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
       : product.category;
     if (!category || typeof category !== "object") return [];
     const categoryRecord = category as Record<string, unknown>;
+    const images = Array.isArray(product.images)
+      ? (product.images as Record<string, unknown>[])
+      : [];
+    const primaryImage = images.find(
+      (image) =>
+        image.is_primary === true &&
+        image.status === "published" &&
+        typeof image.storage_path === "string",
+    );
     if (
       typeof product.id !== "string" ||
       typeof product.category_id !== "string" ||
@@ -108,7 +117,8 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
       typeof product.short_spec !== "string" ||
       typeof product.price_minor !== "number" ||
       typeof product.currency_code !== "string" ||
-      typeof product.display_order !== "number"
+      typeof product.display_order !== "number" ||
+      categoryRecord.is_visible === false
     )
       return [];
     return [
@@ -128,6 +138,14 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
             : null,
         currencyCode: product.currency_code,
         tag: typeof product.tag === "string" ? product.tag : null,
+        imageUrl:
+          primaryImage && typeof primaryImage.storage_path === "string"
+            ? primaryImage.storage_path
+            : null,
+        imageAlt:
+          primaryImage && typeof primaryImage.alt_text === "string"
+            ? primaryImage.alt_text
+            : null,
         displayOrder: product.display_order,
       },
     ];
@@ -153,7 +171,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       service
         .from("products")
         .select(
-          "id, category_id, slug, name, sku, short_spec, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name)",
+          "id, category_id, slug, name, sku, short_spec, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, is_primary, status)",
         )
         .eq("tenant_id", tenant.id)
         .eq("status", "live")

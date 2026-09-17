@@ -18,6 +18,15 @@ export default async function SecureAdminLayout({
         </Link>
         <nav aria-label="Admin navigation">
           <Link href="/admin">Overview</Link>
+          {hasCapability(context.membership.role, "manage_catalogue") ? (
+            <>
+              <Link href="/admin/catalogue/products">Products</Link>
+              <Link href="/admin/catalogue/categories">Categories</Link>
+            </>
+          ) : null}
+          {hasCapability(context.membership.role, "manage_website") ? (
+            <Link href="/admin/settings">Store settings</Link>
+          ) : null}
           {hasCapability(context.membership.role, "manage_members") ? (
             <Link href="/admin/team">Team & roles</Link>
           ) : null}
@@ -36,7 +45,7 @@ export default async function SecureAdminLayout({
             <small>TENANT</small>
             <strong>{context.tenant.businessName}</strong>
           </div>
-          <span>PASSWORD AUTHENTICATED</span>
+          <span>SECURE ADMIN</span>
         </header>
         <main className="admin-main">{children}</main>
       </div>

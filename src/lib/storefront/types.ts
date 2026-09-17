@@ -96,6 +96,8 @@ export type StorefrontProduct = {
   oldPriceMinor: number | null;
   currencyCode: string;
   tag: string | null;
+  imageUrl: string | null;
+  imageAlt: string | null;
   displayOrder: number;
 };
 

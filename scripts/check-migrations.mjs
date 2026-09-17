@@ -15,6 +15,7 @@ const expected = [
   "0006_membership_audit.sql",
   "0007_defer_mfa.sql",
   "0008_storefront_catalogue.sql",
+  "0009_launch_admin.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {

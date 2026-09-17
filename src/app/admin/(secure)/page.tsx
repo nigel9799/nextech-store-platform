@@ -11,9 +11,9 @@ export default async function AdminDashboard({
   return (
     <>
       <div className="admin-heading">
-        <p className="admin-eyebrow">Security foundation</p>
+        <p className="admin-eyebrow">Nextech store</p>
         <h1>ADMIN OVERVIEW</h1>
-        <p>Tenant-scoped access is active for this session.</p>
+        <p>Manage the live catalogue and essential website settings.</p>
       </div>
       {query.notice === "forbidden" ? (
         <p className="form-notice form-notice-error" role="alert">
@@ -37,12 +37,22 @@ export default async function AdminDashboard({
           <span>{context.tenant.hostname}</span>
         </article>
       </section>
-      <section className="admin-placeholder">
-        <h2>Milestone 2 complete boundary</h2>
-        <p>
-          Storefront, catalogue, products, enquiries, and website editing remain
-          intentionally unavailable until their approved milestones.
-        </p>
+      <section className="admin-quick-links" aria-label="Store management">
+        <a href="/admin/catalogue/products">
+          <small>CATALOGUE</small>
+          <strong>Manage products</strong>
+          <span>Add, price, publish or archive products →</span>
+        </a>
+        <a href="/admin/catalogue/categories">
+          <small>ORGANISATION</small>
+          <strong>Manage categories</strong>
+          <span>Control storefront product groups →</span>
+        </a>
+        <a href="/admin/settings">
+          <small>WEBSITE</small>
+          <strong>Store settings</strong>
+          <span>Update branding and contact details →</span>
+        </a>
       </section>
     </>
   );

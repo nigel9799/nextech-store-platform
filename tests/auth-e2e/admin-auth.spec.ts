@@ -25,7 +25,7 @@ test("local fixture signs in and out securely, manages members, and is revoked i
   await expect(
     page.getByRole("heading", { name: "ADMIN OVERVIEW" }),
   ).toBeVisible();
-  await expect(page.getByText("PASSWORD AUTHENTICATED")).toBeVisible();
+  await expect(page.getByText("Secure password session")).toBeVisible();
 
   await page.getByRole("button", { name: "Log out" }).press("Enter");
   await expect(page).toHaveURL(/\/admin\/login\?notice=signed-out/);

@@ -12,7 +12,7 @@ select ok(to_regclass('public.legal_pages') is not null, 'legal pages table exis
 select ok((select relrowsecurity from pg_class where oid = 'public.products'::regclass), 'products RLS enabled');
 select ok((select relforcerowsecurity from pg_class where oid = 'public.products'::regclass), 'products RLS forced');
 select ok(not has_table_privilege('anon', 'public.products', 'SELECT'), 'anonymous product reads are denied');
-select ok(not has_table_privilege('authenticated', 'public.products', 'INSERT'), 'authenticated product writes are denied');
+select ok(has_table_privilege('authenticated', 'public.products', 'INSERT'), 'authenticated catalogue writes are granted for policy checks');
 
 insert into auth.users (id, aud, role, email) values
  ('50000000-0000-0000-0000-000000000001','authenticated','authenticated','storefront-one@example.test'),
