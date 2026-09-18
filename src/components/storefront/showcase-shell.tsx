@@ -7,6 +7,7 @@ import type {
   StorefrontConfig,
   StorefrontProduct,
 } from "@/lib/storefront/types";
+import { ShowcaseContactForm } from "./showcase-contact-form";
 
 const starterSlides = [
   { src: "/showcase/build-1-main.webp", alt: "Nextech RGB gaming PC build" },
@@ -33,55 +34,113 @@ function price(product: StorefrontProduct) {
 }
 
 export function ShowcaseHeader({ config }: { config: StorefrontConfig }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <header className="showcase-header">
-      <Link className="showcase-logo" href="/" aria-label="Nextech home">
-        <Image
-          src={config.logoPath}
-          alt="Nextech"
-          width={180}
-          height={55}
-          priority
-        />
-      </Link>
-      <nav aria-label="Main navigation">
-        <Link href="/">Home</Link>
-        <Link href="/#prebuilds">Prebuilds</Link>
-        <Link href="/gallery-contact">Gallery & Contact</Link>
-      </nav>
-      <a
-        className="showcase-header-cta"
-        href="https://m.me/nextechmt"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Messenger
-      </a>
-    </header>
+    <>
+      <div className="storefront-announcement" role="status">
+        <span aria-hidden="true">●</span>
+        Custom PCs built locally in Malta
+        <Link href="/#prebuilds">VIEW BUILDS</Link>
+      </div>
+      <header className="storefront-header">
+        <Link className="storefront-brand" href="/" aria-label="Nextech home">
+          <Image
+            src={config.logoPath}
+            alt={config.brandName}
+            width={112}
+            height={58}
+            priority
+          />
+        </Link>
+        <button
+          className="storefront-menu-button"
+          type="button"
+          aria-label={
+            menuOpen ? "Close navigation menu" : "Open navigation menu"
+          }
+          aria-expanded={menuOpen}
+          aria-controls="storefront-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true">☰</span>
+        </button>
+        <nav
+          id="storefront-navigation"
+          className={`storefront-navigation${menuOpen ? " is-open" : ""}`}
+          aria-label="Primary navigation"
+        >
+          <Link href="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </Link>
+          <Link href="/#prebuilds" onClick={() => setMenuOpen(false)}>
+            Prebuilds
+          </Link>
+          <Link
+            href="/gallery-contact#gallery"
+            onClick={() => setMenuOpen(false)}
+          >
+            Gallery
+          </Link>
+          <Link
+            href="/gallery-contact#contact"
+            onClick={() => setMenuOpen(false)}
+          >
+            Contact
+          </Link>
+        </nav>
+        <a
+          className="storefront-cart-button"
+          href="https://m.me/nextechmt"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Messenger
+        </a>
+      </header>
+    </>
   );
 }
 
 export function ShowcaseFooter({ config }: { config: StorefrontConfig }) {
   return (
-    <footer className="showcase-footer">
-      <div>
-        <strong>NEXTECH</strong>
-        <span>Custom PCs. Built in Malta.</span>
+    <footer className="storefront-footer">
+      <div className="storefront-footer-main">
+        <Image
+          src={config.logoPath}
+          alt={config.brandName}
+          width={145}
+          height={76}
+        />
+        <div>
+          <small>CONTACT</small>
+          <a href={`tel:${config.contact.phoneOne.replace(/\s/g, "")}`}>
+            {config.contact.phoneOne}
+          </a>
+          <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+            Facebook Messenger
+          </a>
+        </div>
+        <div>
+          <small>EMAIL US</small>
+          <a href={`mailto:${config.contact.email}`}>{config.contact.email}</a>
+          <span>{config.contact.location}</span>
+        </div>
+        <div>
+          <small>QUICK LINKS</small>
+          <Link href="/#prebuilds">Prebuilds</Link>
+          <Link href="/gallery-contact#gallery">Gallery</Link>
+          <Link href="/gallery-contact#contact">Contact</Link>
+          <Link href="/admin">Admin login</Link>
+        </div>
       </div>
-      <div className="showcase-footer-links">
-        <Link href="/gallery-contact">Gallery & Contact</Link>
-        <a
-          href="https://www.facebook.com/nextechmt"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Facebook
-        </a>
-        <Link href="/privacy">Privacy</Link>
-        <Link href="/terms">Terms</Link>
-        <Link href="/admin">Admin</Link>
+      <div className="storefront-footer-bottom">
+        <span>{config.footer.copyright}</span>
+        <span>
+          <Link href="/privacy">Privacy</Link> ·{" "}
+          <Link href="/terms">Terms</Link> ·{" "}
+          <Link href="/delivery-returns">Delivery & returns</Link>
+        </span>
       </div>
-      <small>{config.footer.copyright}</small>
     </footer>
   );
 }
@@ -287,6 +346,31 @@ export function ShowcaseHome({
               Explore gallery
             </Link>
           </div>
+        </section>
+
+        <section
+          className="showcase-contact showcase-contact-home"
+          id="contact"
+        >
+          <div className="showcase-contact-copy">
+            <p className="showcase-kicker">CONTACT NEXTECH</p>
+            <h2>LET’S BUILD YOUR PC.</h2>
+            <p>
+              Tell us what you play, create or need from your next PC. Your
+              enquiry is sent by email and saved in the secure admin portal for
+              follow-up.
+            </p>
+            <div className="showcase-direct">
+              <a href={`mailto:${config.contact.email}`}>
+                {config.contact.email}
+              </a>
+              <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+                Facebook Messenger ↗
+              </a>
+              <span>{config.contact.location}</span>
+            </div>
+          </div>
+          <ShowcaseContactForm />
         </section>
       </main>
       <ShowcaseFooter config={config} />

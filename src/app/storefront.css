@@ -1218,6 +1218,7 @@
 
 /* Completed-build showcase */
 .showcase-site {
+  --storefront-primary: var(--showcase-accent, #2590a4);
   min-height: 100svh;
   overflow: hidden;
   background: #06090b;
