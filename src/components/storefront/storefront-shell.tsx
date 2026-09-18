@@ -591,23 +591,25 @@ export function StorefrontShell({
             Website
             <input name="website" tabIndex={-1} autoComplete="off" />
           </label>
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Sending…" : config.contact.submitButton}{" "}
-            <b aria-hidden="true">→</b>
-          </button>
-          <button
-            className="storefront-whatsapp-button"
-            type="button"
-            onClick={() =>
-              openWhatsApp([
-                "Hello Nextech, I would like some help.",
-                contactMessage ||
-                  "Please contact me about a product or custom build.",
-              ])
-            }
-          >
-            Send through WhatsApp instead
-          </button>
+          <div className="storefront-contact-actions">
+            <button type="submit" disabled={submitting}>
+              {submitting ? "Sending…" : config.contact.submitButton}{" "}
+              <b aria-hidden="true">→</b>
+            </button>
+            <button
+              className="storefront-whatsapp-button"
+              type="button"
+              onClick={() =>
+                openWhatsApp([
+                  "Hello Nextech, I would like some help.",
+                  contactMessage ||
+                    "Please contact me about a product or custom build.",
+                ])
+              }
+            >
+              Send through WhatsApp instead
+            </button>
+          </div>
           <small id="storefront-contact-helper">
             {config.contact.helperText}
           </small>

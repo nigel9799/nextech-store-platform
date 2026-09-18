@@ -724,6 +724,69 @@ a {
   gap: 0.35rem;
   min-width: 180px;
 }
+.admin-filter-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.admin-filter-form label,
+.admin-note-form label {
+  color: #617074;
+  font:
+    700 9px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.admin-filter-form select {
+  min-width: 180px;
+  min-height: 42px;
+  border: 1px solid #bec8ca;
+  background: white;
+  padding: 9px 11px;
+}
+.admin-enquiry-notes {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #dce3e3;
+}
+.admin-enquiry-notes h3 {
+  margin-top: 0;
+}
+.admin-enquiry-notes ol {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+.admin-enquiry-notes li {
+  border-left: 3px solid #2590a4;
+  background: #f2f6f6;
+  padding: 11px 13px;
+}
+.admin-enquiry-notes li p {
+  margin: 0 0 5px;
+  white-space: pre-wrap;
+}
+.admin-enquiry-notes li small,
+.admin-muted {
+  color: #6e7b7e;
+}
+.admin-note-form {
+  display: grid;
+  gap: 8px;
+}
+.admin-note-form textarea {
+  width: 100%;
+  border: 1px solid #bec8ca;
+  padding: 11px 12px;
+  resize: vertical;
+}
+.admin-note-form .admin-button {
+  justify-self: start;
+}
 .admin-editor {
   max-width: 900px;
 }
@@ -867,6 +930,11 @@ a {
   }
   .admin-row-actions {
     align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-filter-form,
+  .admin-inline-form {
+    align-items: stretch;
     flex-direction: column;
   }
 }

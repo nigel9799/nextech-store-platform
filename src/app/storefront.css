@@ -750,7 +750,13 @@
   resize: vertical;
   line-height: 1.5;
 }
-.storefront-contact-form > button {
+.storefront-contact-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.storefront-contact-actions > button {
+  min-height: 50px;
   border: 0;
   background: #0a0e0f;
   color: white;
@@ -761,7 +767,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.storefront-contact-form > button:hover {
+.storefront-contact-actions > button:hover {
   background: var(--storefront-primary);
 }
 
@@ -769,7 +775,6 @@
   background: transparent;
   border: 1px solid #607072;
   color: #172023;
-  margin-top: -0.35rem;
 }
 
 .storefront-honeypot {
@@ -779,9 +784,14 @@
   overflow: hidden;
   clip: rect(0 0 0 0);
 }
-.storefront-contact-form > button b {
+.storefront-contact-actions > button b {
   float: right;
   font-size: 17px;
+}
+@media (max-width: 600px) {
+  .storefront-contact-actions {
+    grid-template-columns: 1fr;
+  }
 }
 .storefront-contact-form > small {
   color: #738083;
