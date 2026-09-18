@@ -167,6 +167,71 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
 }
 
 export async function getStorefrontData(): Promise<StorefrontData> {
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    const previewProducts: StorefrontProduct[] = [
+      {
+        id: "preview-build-1",
+        categoryId: "preview-completed-builds",
+        categorySlug: "completed-builds",
+        categoryName: "Completed Builds",
+        name: "Build 1",
+        slug: "build-1",
+        sku: "BUILD-001",
+        shortSpec:
+          "A premium RGB gaming system with meticulous cable management and a clean panoramic finish.",
+        description:
+          "Use this space to describe the client brief, performance goals and component choices. Add the full CPU, GPU, memory, storage, cooling, case and power-supply specification from the admin portal.",
+        priceMinor: null,
+        oldPriceMinor: null,
+        currencyCode: "EUR",
+        tag: "Featured build",
+        imageUrl: "/showcase/build-1-main.webp",
+        imageAlt: "Nextech Build 1",
+        imageUrls: [
+          "/showcase/build-1-main.webp",
+          "/showcase/build-1-detail.webp",
+          "/showcase/build-1-cooling.webp",
+        ],
+        displayOrder: 0,
+      },
+      {
+        id: "preview-build-2",
+        categoryId: "preview-completed-builds",
+        categorySlug: "completed-builds",
+        categoryName: "Completed Builds",
+        name: "Build 2",
+        slug: "build-2",
+        sku: "BUILD-002",
+        shortSpec:
+          "A striking complete gaming setup built for immersive performance and a bold RGB aesthetic.",
+        description:
+          "Use this area for the complete build story and detailed specifications. Pricing can remain blank when the system is displayed purely as previous work.",
+        priceMinor: null,
+        oldPriceMinor: null,
+        currencyCode: "EUR",
+        tag: "Completed setup",
+        imageUrl: "/showcase/build-2-setup.webp",
+        imageAlt: "Nextech Build 2 gaming setup",
+        imageUrls: ["/showcase/build-2-setup.webp"],
+        displayOrder: 1,
+      },
+    ];
+    return {
+      tenant: {
+        id: "preview",
+        slug: "nextech",
+        businessName: "Nextech Malta",
+        hostname: process.env.VERCEL_URL ?? "preview.vercel.app",
+      },
+      config: defaultStorefrontConfig,
+      categories: [],
+      products: previewProducts,
+      legalPages: [],
+    };
+  }
   const tenant = await resolveRequestTenant();
   const service = createServiceRoleClient();
   const [settingsResult, categoriesResult, initialProductsResult, legalResult] =
