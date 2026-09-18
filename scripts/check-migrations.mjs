@@ -17,6 +17,7 @@ const expected = [
   "0008_storefront_catalogue.sql",
   "0009_launch_admin.sql",
   "0010_reconcile_service_role_grants.sql",
+  "0011_enquiries.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -43,6 +44,7 @@ const tenantTables = [
   "product_categories",
   "products",
   "product_images",
+  "enquiries",
 ];
 
 for (const table of tenantTables) {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import type {
   StorefrontCategory,
   StorefrontConfig,
@@ -87,11 +87,70 @@ export function StorefrontShell({
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [contactNotice, setContactNotice] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const whatsappNumber = config.contact.phoneOne.replace(/\D/g, "");
 
   function openWhatsApp(lines: string[]) {
     const message = encodeURIComponent(lines.join("\n"));
     window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+  }
+
+  async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    setSubmitting(true);
+    setContactNotice("Sending your enquiry…");
+    const form = new FormData(formElement);
+    const interest = String(form.get("interest") ?? "General enquiry");
+    const kind = cart.length
+      ? "cart"
+      : interest === "Custom PC build"
+        ? "custom_build"
+        : interest === "Order support"
+          ? "order_support"
+          : interest === "Product or part enquiry"
+            ? "product"
+            : "general";
+    try {
+      const response = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind,
+          name: form.get("name"),
+          email: form.get("email"),
+          phone: form.get("phone"),
+          interest,
+          budget: form.get("budget"),
+          message: form.get("message"),
+          website: form.get("website"),
+          cartItems: cart.map(({ id, name, sku, priceMinor }) => ({
+            id,
+            name,
+            sku,
+            priceMinor,
+          })),
+        }),
+      });
+      const result = (await response.json()) as {
+        error?: string;
+        reference?: string;
+      };
+      if (!response.ok) throw new Error(result.error);
+      formElement.reset();
+      setContactMessage("");
+      setCart([]);
+      setContactNotice(
+        `Thank you. Your request ${result.reference ?? ""} was sent to Nextech.`,
+      );
+    } catch {
+      setContactNotice(
+        "Your request could not be emailed. Please use WhatsApp below.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   useEffect(() => {
@@ -469,20 +528,7 @@ export function StorefrontShell({
         </div>
         <form
           className="storefront-contact-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const form = new FormData(event.currentTarget);
-            setContactNotice("Opening WhatsApp with your enquiry…");
-            openWhatsApp([
-              "Hello Nextech, I would like some help.",
-              `Name: ${String(form.get("name") ?? "")}`,
-              `Email: ${String(form.get("email") ?? "")}`,
-              `Phone: ${String(form.get("phone") ?? "Not supplied")}`,
-              `Enquiry: ${String(form.get("interest") ?? "")}`,
-              `Budget: ${String(form.get("budget") ?? "Not supplied")}`,
-              `Message: ${String(form.get("message") ?? "")}`,
-            ]);
-          }}
+          onSubmit={submitEnquiry}
           aria-describedby="storefront-contact-helper"
         >
           <div className="storefront-form-row">
@@ -537,10 +583,30 @@ export function StorefrontShell({
               required
               rows={6}
               placeholder="For a custom PC, tell us the games, software or work you will use it for…"
+              value={contactMessage}
+              onChange={(event) => setContactMessage(event.target.value)}
             />
           </label>
-          <button type="submit">
-            {config.contact.submitButton} <b aria-hidden="true">→</b>
+          <label className="storefront-honeypot" aria-hidden="true">
+            Website
+            <input name="website" tabIndex={-1} autoComplete="off" />
+          </label>
+          <button type="submit" disabled={submitting}>
+            {submitting ? "Sending…" : config.contact.submitButton}{" "}
+            <b aria-hidden="true">→</b>
+          </button>
+          <button
+            className="storefront-whatsapp-button"
+            type="button"
+            onClick={() =>
+              openWhatsApp([
+                "Hello Nextech, I would like some help.",
+                contactMessage ||
+                  "Please contact me about a product or custom build.",
+              ])
+            }
+          >
+            Send through WhatsApp instead
           </button>
           <small id="storefront-contact-helper">
             {config.contact.helperText}
@@ -670,17 +736,25 @@ export function StorefrontShell({
               </small>
               <button
                 type="button"
-                onClick={() =>
-                  openWhatsApp([
-                    "Hello Nextech, I would like to enquire about this cart:",
-                    ...cart.map(
-                      (product, index) =>
-                        `${index + 1}. ${product.name} — ${formatPrice(product.priceMinor, product.currencyCode)}`,
-                    ),
-                    `Estimated total: ${formatPrice(cartTotal, cart[0].currencyCode)}`,
-                    "Please confirm availability and the next steps.",
-                  ])
-                }
+                onClick={() => {
+                  setContactMessage(
+                    [
+                      "I would like to enquire about this cart:",
+                      ...cart.map(
+                        (product, index) =>
+                          `${index + 1}. ${product.name} — ${formatPrice(product.priceMinor, product.currencyCode)}`,
+                      ),
+                      `Estimated total: ${formatPrice(cartTotal, cart[0].currencyCode)}`,
+                      "Please confirm availability and the next steps.",
+                    ].join("\n"),
+                  );
+                  setCartOpen(false);
+                  requestAnimationFrame(() =>
+                    document
+                      .getElementById("contact-form")
+                      ?.scrollIntoView({ behavior: "smooth" }),
+                  );
+                }}
               >
                 {config.cart.enquiryLabel} →
               </button>

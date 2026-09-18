@@ -93,6 +93,21 @@ export default async function SettingsPage({
           </label>
           <div className="admin-form-grid">
             <label>
+              Enquiry notification email <span>Required</span>
+              <input
+                name="notificationEmail"
+                type="email"
+                required
+                defaultValue={value(
+                  contact.notificationEmail,
+                  "nigel9799@hotmail.com",
+                )}
+              />
+              <small>
+                All customer forms are emailed here. You can change this later.
+              </small>
+            </label>
+            <label>
               Customer email <span>Required</span>
               <input
                 name="email"

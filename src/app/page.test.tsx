@@ -27,6 +27,9 @@ describe("storefront page", () => {
     );
     expect(document.querySelector("#hero-title")).toBeVisible();
     expect(screen.getAllByText("Prebuilt PCs").length).toBeGreaterThan(0);
-    expect(screen.getByText(/opens WhatsApp/i)).toBeVisible();
+    expect(screen.getByText(/emailed to Nextech/i)).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /WhatsApp instead/i }),
+    ).toBeVisible();
   });
 });

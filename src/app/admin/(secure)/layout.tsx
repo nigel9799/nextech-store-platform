@@ -24,6 +24,9 @@ export default async function SecureAdminLayout({
               <Link href="/admin/catalogue/categories">Categories</Link>
             </>
           ) : null}
+          {hasCapability(context.membership.role, "manage_enquiries") ? (
+            <Link href="/admin/enquiries">Enquiries</Link>
+          ) : null}
           {hasCapability(context.membership.role, "manage_website") ? (
             <Link href="/admin/settings">Store settings</Link>
           ) : null}

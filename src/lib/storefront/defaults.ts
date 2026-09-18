@@ -78,7 +78,8 @@ export const defaultStorefrontConfig: StorefrontConfig = {
     body: "Need a personalised PC or help choosing a component? Send us your details and our team will get back to you directly.",
     directLabel: "Prefer to contact us directly?",
     submitButton: "Send enquiry",
-    helperText: "Submitting opens WhatsApp with your enquiry ready to send.",
+    helperText:
+      "Your request is emailed to Nextech and saved securely for follow-up.",
     email: "info@nextechmt.com",
     phoneOne: "+356 7762 1122",
     phoneTwo: "+356 7739 6178",

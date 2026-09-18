@@ -764,6 +764,21 @@
 .storefront-contact-form > button:hover {
   background: var(--storefront-primary);
 }
+
+.storefront-contact-form .storefront-whatsapp-button {
+  background: transparent;
+  border: 1px solid #607072;
+  color: #172023;
+  margin-top: -0.35rem;
+}
+
+.storefront-honeypot {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
 .storefront-contact-form > button b {
   float: right;
   font-size: 17px;

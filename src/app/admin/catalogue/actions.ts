@@ -357,6 +357,7 @@ export async function updateSettingsAction(formData: FormData) {
       primaryColor: z.string().regex(/^#[0-9a-f]{6}$/i),
       announcementText: z.string().trim().max(160),
       email: z.string().trim().email().max(254),
+      notificationEmail: z.string().trim().email().max(254),
       phoneOne: z.string().trim().min(3).max(40),
       phoneTwo: z.string().trim().max(40),
       location: z.string().trim().min(1).max(120),
@@ -386,6 +387,7 @@ export async function updateSettingsAction(formData: FormData) {
     contact: {
       ...existingContact,
       email: parsed.data.email,
+      notificationEmail: parsed.data.notificationEmail,
       phoneOne: parsed.data.phoneOne,
       phoneTwo: parsed.data.phoneTwo,
       location: parsed.data.location,

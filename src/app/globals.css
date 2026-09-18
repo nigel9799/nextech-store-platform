@@ -711,6 +711,19 @@ a {
   flex: 0 0 auto;
   text-decoration: none;
 }
+
+.admin-inline-form {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-inline-form label {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 180px;
+}
 .admin-editor {
   max-width: 900px;
 }
