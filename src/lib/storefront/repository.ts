@@ -169,7 +169,7 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
 export async function getStorefrontData(): Promise<StorefrontData> {
   const tenant = await resolveRequestTenant();
   const service = createServiceRoleClient();
-  const [settingsResult, categoriesResult, productsResult, legalResult] =
+  const [settingsResult, categoriesResult, initialProductsResult, legalResult] =
     await Promise.all([
       service
         .from("site_settings")
@@ -196,12 +196,27 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         .eq("tenant_id", tenant.id)
         .eq("is_published", true),
     ]);
-  const firstError = [
-    settingsResult,
-    categoriesResult,
-    productsResult,
-    legalResult,
-  ].find((result) => result.error)?.error;
+  let productRows: unknown[] = initialProductsResult.data ?? [];
+  let productError = initialProductsResult.error;
+  if (
+    productError?.code === "42703" &&
+    productError.message.includes("description")
+  ) {
+    const legacyProductsResult = await service
+      .from("products")
+      .select(
+        "id, category_id, slug, name, sku, short_spec, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
+      )
+      .eq("tenant_id", tenant.id)
+      .eq("status", "live")
+      .order("display_order");
+    productRows = legacyProductsResult.data ?? [];
+    productError = legacyProductsResult.error;
+  }
+  const firstError =
+    [settingsResult, categoriesResult, legalResult].find(
+      (result) => result.error,
+    )?.error ?? productError;
   if (firstError)
     throw new Error(
       `Storefront data could not be loaded: ${firstError.message}`,
@@ -218,7 +233,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         })),
       ]
     : defaultStorefrontCategories;
-  const mappedProducts = mapProducts(productsResult.data ?? []);
+  const mappedProducts = mapProducts(productRows);
   const config = mergeConfig(settingsResult.data?.settings);
   const legalPages: StorefrontLegalPage[] = (legalResult.data ?? []).flatMap(
     (page) => {
