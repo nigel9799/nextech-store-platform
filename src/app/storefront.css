@@ -772,9 +772,16 @@
 }
 
 .storefront-contact-form .storefront-whatsapp-button {
+  display: grid;
+  place-items: center;
   background: transparent;
   border: 1px solid #607072;
   color: #172023;
+}
+.storefront-contact-form .storefront-whatsapp-button:hover {
+  background: #25d366;
+  border-color: #25d366;
+  color: #07120b;
 }
 
 .storefront-honeypot {

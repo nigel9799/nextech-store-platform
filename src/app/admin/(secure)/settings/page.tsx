@@ -118,6 +118,9 @@ export default async function SettingsPage({
                   defaultStorefrontConfig.contact.email,
                 )}
               />
+              <small>
+                Displayed publicly so customers can contact the store directly.
+              </small>
             </label>
             <label>
               WhatsApp / primary phone <span>Required</span>

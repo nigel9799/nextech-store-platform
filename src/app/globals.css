@@ -505,6 +505,26 @@ a {
     monospace;
   letter-spacing: 0.14em;
 }
+.admin-topbar .admin-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.admin-topbar-actions a {
+  border: 1px solid #2590a4;
+  padding: 9px 12px;
+  color: #176b7a;
+  font:
+    700 10px var(--font-geist-mono),
+    monospace;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.admin-topbar-actions a:hover {
+  background: #2590a4;
+  color: white;
+}
 .admin-main {
   padding: 42px clamp(20px, 4vw, 64px) 70px;
 }

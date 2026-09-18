@@ -29,7 +29,7 @@ describe("storefront page", () => {
     expect(screen.getAllByText("Prebuilt PCs").length).toBeGreaterThan(0);
     expect(screen.getByText(/emailed to Nextech/i)).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /WhatsApp instead/i }),
+      screen.getByRole("button", { name: /Send through WhatsApp/i }),
     ).toBeVisible();
   });
 });

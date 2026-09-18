@@ -48,7 +48,12 @@ export default async function SecureAdminLayout({
             <small>TENANT</small>
             <strong>{context.tenant.businessName}</strong>
           </div>
-          <span>SECURE ADMIN</span>
+          <div className="admin-topbar-actions">
+            <Link href="/" target="_blank" rel="noreferrer">
+              View website ↗
+            </Link>
+            <span>SECURE ADMIN</span>
+          </div>
         </header>
         <main className="admin-main">{children}</main>
       </div>

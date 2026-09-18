@@ -101,7 +101,9 @@ export default async function EnquiriesPage({
                 <div className="admin-heading-row">
                   <div>
                     <small>
-                      {new Date(enquiry.created_at).toLocaleString("en-MT")}
+                      {new Date(enquiry.created_at).toLocaleString("en-MT", {
+                        timeZone: "Europe/Malta",
+                      })}
                     </small>
                     <h2>{enquiry.interest}</h2>
                   </div>
@@ -176,6 +178,7 @@ export default async function EnquiriesPage({
                             {comment.author_name} ·{" "}
                             {new Date(comment.created_at).toLocaleString(
                               "en-MT",
+                              { timeZone: "Europe/Malta" },
                             )}
                           </small>
                         </li>
