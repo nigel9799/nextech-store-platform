@@ -19,6 +19,16 @@ export async function resolveTenant(
   const hostname = normalizeHostname(hostHeader);
   const environment = getServerEnvironment();
   const supabase = createServiceRoleClient();
+  const vercelPreviewHostname = process.env.VERCEL_URL
+    ? normalizeHostname(process.env.VERCEL_URL)
+    : null;
+  const productionHostname = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? normalizeHostname(process.env.VERCEL_PROJECT_PRODUCTION_URL)
+    : null;
+  const isTrustedVercelPreview =
+    process.env.VERCEL_ENV === "preview" &&
+    vercelPreviewHostname === hostname &&
+    productionHostname !== null;
 
   if (
     isLocalHostname(hostname) &&
@@ -41,10 +51,13 @@ export async function resolveTenant(
     };
   }
 
+  const tenantLookupHostname = isTrustedVercelPreview
+    ? productionHostname
+    : hostname;
   const { data: domain, error: domainError } = await supabase
     .from("tenant_domains")
     .select("tenant_id")
-    .eq("hostname", hostname)
+    .eq("hostname", tenantLookupHostname)
     .not("verified_at", "is", null)
     .single();
   if (domainError || !domain) {
