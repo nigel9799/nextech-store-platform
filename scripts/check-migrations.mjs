@@ -19,6 +19,7 @@ const expected = [
   "0010_reconcile_service_role_grants.sql",
   "0011_enquiries.sql",
   "0012_enquiry_comments.sql",
+  "0013_showcase_build_details.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {

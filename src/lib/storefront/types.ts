@@ -92,12 +92,14 @@ export type StorefrontProduct = {
   slug: string;
   sku: string;
   shortSpec: string;
-  priceMinor: number;
+  description: string | null;
+  priceMinor: number | null;
   oldPriceMinor: number | null;
   currencyCode: string;
   tag: string | null;
   imageUrl: string | null;
   imageAlt: string | null;
+  imageUrls: string[];
   displayOrder: number;
 };
 

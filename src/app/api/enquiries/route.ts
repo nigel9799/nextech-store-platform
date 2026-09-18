@@ -8,7 +8,7 @@ const cartItemSchema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1).max(160),
   sku: z.string().trim().min(1).max(80),
-  priceMinor: z.number().int().nonnegative(),
+  priceMinor: z.number().int().nonnegative().nullable(),
 });
 const enquirySchema = z.object({
   kind: z.enum(["general", "product", "cart", "custom_build", "order_support"]),
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
     const input = parsed.data;
     const total = input.cartItems.reduce(
-      (sum, item) => sum + item.priceMinor,
+      (sum, item) => sum + (item.priceMinor ?? 0),
       0,
     );
     const service = createServiceRoleClient();
@@ -67,7 +67,11 @@ export async function POST(request: NextRequest) {
         budget: input.budget || null,
         message: input.message,
         cart_items: input.cartItems,
-        estimated_total_minor: input.cartItems.length ? total : null,
+        estimated_total_minor:
+          input.cartItems.length &&
+          input.cartItems.every((item) => item.priceMinor !== null)
+            ? total
+            : null,
       })
       .select("id")
       .single();
@@ -85,7 +89,11 @@ export async function POST(request: NextRequest) {
       budget: input.budget,
       message: input.message,
       cartItems: input.cartItems,
-      estimatedTotalMinor: input.cartItems.length ? total : undefined,
+      estimatedTotalMinor:
+        input.cartItems.length &&
+        input.cartItems.every((item) => item.priceMinor !== null)
+          ? total
+          : undefined,
     });
     await service
       .from("enquiries")

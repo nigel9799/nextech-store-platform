@@ -15,12 +15,12 @@ export default async function EditProductPage({
   const { id } = await params;
   const query = await searchParams;
   const supabase = await createClient();
-  const [{ data: product }, { data: categories }, { data: image }] =
+  const [{ data: product }, { data: categories }, { data: images }] =
     await Promise.all([
       supabase
         .from("products")
         .select(
-          "id, name, slug, sku, category_id, short_spec, price_minor, old_price_minor, status, tag, display_order",
+          "id, name, slug, sku, category_id, short_spec, description, price_minor, old_price_minor, status, tag, display_order",
         )
         .eq("tenant_id", context.tenant.id)
         .eq("id", id)
@@ -35,16 +35,16 @@ export default async function EditProductPage({
         .select("storage_path")
         .eq("tenant_id", context.tenant.id)
         .eq("product_id", id)
-        .eq("is_primary", true)
-        .maybeSingle(),
+        .eq("status", "published")
+        .order("display_order"),
     ]);
   if (!product) notFound();
   return (
     <>
       <div className="admin-heading">
         <p className="admin-eyebrow">Catalogue</p>
-        <h1>EDIT PRODUCT</h1>
-        <p>Changes to a Live product appear on the storefront immediately.</p>
+        <h1>EDIT COMPLETED BUILD</h1>
+        <p>Changes to a Live build appear on the showcase immediately.</p>
       </div>
       {query.error ? (
         <p className="form-notice form-notice-error" role="alert">
@@ -55,7 +55,10 @@ export default async function EditProductPage({
         <ProductForm
           action={updateProductAction}
           categories={categories ?? []}
-          product={{ ...product, imageUrl: image?.storage_path ?? "" }}
+          product={{
+            ...product,
+            imageUrls: (images ?? []).map((image) => image.storage_path),
+          }}
         />
       </section>
     </>

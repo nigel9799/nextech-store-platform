@@ -8,10 +8,10 @@ import { requireAdminContext } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/server";
 
 const notices: Record<string, string> = {
-  created: "Product created successfully.",
-  updated: "Product updated successfully.",
-  archived: "Product archived and removed from the storefront.",
-  deleted: "Product permanently deleted.",
+  created: "Build created successfully.",
+  updated: "Build updated successfully.",
+  archived: "Build archived and removed from the showcase.",
+  deleted: "Build permanently deleted.",
 };
 
 export default async function ProductsPage({
@@ -24,9 +24,7 @@ export default async function ProductsPage({
   const query = await searchParams;
   const { data: products } = await supabase
     .from("products")
-    .select(
-      "id, name, sku, price_minor, status, display_order, category:product_categories(name)",
-    )
+    .select("id, name, sku, price_minor, status, display_order")
     .eq("tenant_id", context.tenant.id)
     .order("display_order");
 
@@ -35,11 +33,11 @@ export default async function ProductsPage({
       <div className="admin-heading admin-heading-row">
         <div>
           <p className="admin-eyebrow">Catalogue</p>
-          <h1>PRODUCTS</h1>
-          <p>Only products marked Live appear on the public storefront.</p>
+          <h1>COMPLETED BUILDS</h1>
+          <p>Only builds marked Live appear on the public showcase.</p>
         </div>
         <Link className="admin-button" href="/admin/catalogue/products/new">
-          Add product
+          Add build
         </Link>
       </div>
       {query.notice && notices[query.notice] ? (
@@ -57,8 +55,7 @@ export default async function ProductsPage({
           <table>
             <thead>
               <tr>
-                <th>Product</th>
-                <th>Category</th>
+                <th>Build</th>
                 <th>Price</th>
                 <th>Status</th>
                 <th>Order</th>
@@ -67,17 +64,17 @@ export default async function ProductsPage({
             </thead>
             <tbody>
               {(products ?? []).map((product) => {
-                const category = Array.isArray(product.category)
-                  ? product.category[0]
-                  : product.category;
                 return (
                   <tr key={product.id}>
                     <td>
                       <strong>{product.name}</strong>
                       <small>{product.sku}</small>
                     </td>
-                    <td>{category?.name ?? "—"}</td>
-                    <td>€{(product.price_minor / 100).toFixed(2)}</td>
+                    <td>
+                      {typeof product.price_minor === "number"
+                        ? `€${(product.price_minor / 100).toFixed(2)}`
+                        : "Not displayed"}
+                    </td>
                     <td>
                       <span
                         className={`admin-status admin-status-${product.status}`}
@@ -110,9 +107,7 @@ export default async function ProductsPage({
               })}
               {!products?.length ? (
                 <tr>
-                  <td colSpan={6}>
-                    No products yet. Add your first product to begin.
-                  </td>
+                  <td colSpan={5}>No builds yet. Add Build 1 to begin.</td>
                 </tr>
               ) : null}
             </tbody>

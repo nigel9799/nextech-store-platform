@@ -160,25 +160,18 @@ const productSchema = z.object({
   sku: z.string().trim().min(1).max(80),
   categoryId: z.string().uuid(),
   shortSpec: z.string().trim().min(1).max(240),
+  description: z.string().trim().max(5000),
   price: z.string().trim(),
   oldPrice: z.string().trim(),
   status: z.enum(statuses),
   tag: z.string().trim().max(40),
-  imageUrl: z.union([
-    z.literal(""),
-    z
-      .string()
-      .trim()
-      .url()
-      .regex(/^https:\/\//i)
-      .max(500),
-  ]),
+  imageUrls: z.string().trim().max(4000),
 });
 
 async function saveProductImage(
   productId: string,
   tenantId: string,
-  imageUrl: string,
+  imageUrls: string[],
   altText: string,
 ) {
   const supabase = await createClient();
@@ -188,16 +181,18 @@ async function saveProductImage(
     .eq("tenant_id", tenantId)
     .eq("product_id", productId);
   if (deleteError) return deleteError;
-  if (!imageUrl) return null;
-  const { error } = await supabase.from("product_images").insert({
-    tenant_id: tenantId,
-    product_id: productId,
-    storage_path: imageUrl,
-    alt_text: altText,
-    display_order: 0,
-    is_primary: true,
-    status: "published",
-  });
+  if (!imageUrls.length) return null;
+  const { error } = await supabase.from("product_images").insert(
+    imageUrls.map((imageUrl, index) => ({
+      tenant_id: tenantId,
+      product_id: productId,
+      storage_path: imageUrl,
+      alt_text: `${altText}${index ? ` detail ${index + 1}` : ""}`,
+      display_order: index,
+      is_primary: index === 0,
+      status: "published",
+    })),
+  );
   return error;
 }
 
@@ -208,27 +203,53 @@ function readProduct(formData: FormData) {
     sku: formData.get("sku"),
     categoryId: formData.get("categoryId"),
     shortSpec: formData.get("shortSpec"),
+    description: formData.get("description") ?? "",
     price: formData.get("price"),
     oldPrice: formData.get("oldPrice") ?? "",
     status: formData.get("status"),
     tag: formData.get("tag") ?? "",
-    imageUrl: formData.get("imageUrl") ?? "",
+    imageUrls: formData.get("imageUrls") ?? "",
   });
   const order = parseOptionalOrder(formData.get("displayOrder"));
   if (!parsed.success || Number.isNaN(order)) return null;
   const slug = parsed.data.slug || slugify(parsed.data.name);
-  const priceMinor = parsePrice(parsed.data.price);
+  const imageUrls = parsed.data.imageUrls
+    ? parsed.data.imageUrls
+        .split(/\r?\n/)
+        .map((value) => value.trim())
+        .filter(Boolean)
+    : [];
+  if (
+    imageUrls.length > 8 ||
+    imageUrls.some((value) => {
+      try {
+        return new URL(value).protocol !== "https:" || value.length > 500;
+      } catch {
+        return true;
+      }
+    })
+  )
+    return null;
+  const priceMinor = parsed.data.price ? parsePrice(parsed.data.price) : null;
   const oldPriceMinor = parsed.data.oldPrice
     ? parsePrice(parsed.data.oldPrice)
     : null;
   if (
     !slugPattern.test(slug) ||
-    priceMinor === null ||
+    (parsed.data.price && priceMinor === null) ||
     (parsed.data.oldPrice && oldPriceMinor === null) ||
-    (oldPriceMinor !== null && oldPriceMinor < priceMinor)
+    (oldPriceMinor !== null &&
+      (priceMinor === null || oldPriceMinor < priceMinor))
   )
     return null;
-  return { ...parsed.data, slug, priceMinor, oldPriceMinor, order };
+  return {
+    ...parsed.data,
+    slug,
+    imageUrls,
+    priceMinor,
+    oldPriceMinor,
+    order,
+  };
 }
 
 export async function createProductAction(formData: FormData) {
@@ -246,6 +267,7 @@ export async function createProductAction(formData: FormData) {
       slug: product.slug,
       sku: product.sku,
       short_spec: product.shortSpec,
+      description: product.description || null,
       price_minor: product.priceMinor,
       old_price_minor: product.oldPriceMinor,
       currency_code: "EUR",
@@ -265,7 +287,7 @@ export async function createProductAction(formData: FormData) {
   const imageError = await saveProductImage(
     data.id,
     context.tenant.id,
-    product.imageUrl,
+    product.imageUrls,
     product.name,
   );
   if (imageError)
@@ -293,6 +315,7 @@ export async function updateProductAction(formData: FormData) {
       slug: product.slug,
       sku: product.sku,
       short_spec: product.shortSpec,
+      description: product.description || null,
       price_minor: product.priceMinor,
       old_price_minor: product.oldPriceMinor,
       status: product.status,
@@ -306,7 +329,7 @@ export async function updateProductAction(formData: FormData) {
   const imageError = await saveProductImage(
     id.data,
     context.tenant.id,
-    product.imageUrl,
+    product.imageUrls,
     product.name,
   );
   if (imageError)

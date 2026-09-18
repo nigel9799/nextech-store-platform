@@ -5,8 +5,9 @@ import "./globals.css";
 import "./storefront.css";
 
 export const metadata: Metadata = {
-  title: "Nextech Production Platform",
-  description: "Production foundation for the Nextech Malta storefront.",
+  title: "Nextech Malta | Custom PC Builds",
+  description:
+    "Completed custom PC builds, local expertise and personalised support from Nextech Malta.",
 };
 
 export default function RootLayout({

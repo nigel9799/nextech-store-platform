@@ -20,9 +20,10 @@ export default async function NewProductPage({
     <>
       <div className="admin-heading">
         <p className="admin-eyebrow">Catalogue</p>
-        <h1>ADD PRODUCT</h1>
+        <h1>ADD COMPLETED BUILD</h1>
         <p>
-          Create a product, then mark it Live when it is ready for customers.
+          Add the photos and story of a completed PC, then mark it Live when it
+          is ready for the showcase.
         </p>
       </div>
       {query.error ? (
@@ -36,8 +37,10 @@ export default async function NewProductPage({
         </section>
       ) : (
         <section className="admin-placeholder">
-          <h2>Create a category first</h2>
-          <p>Every product must belong to a category.</p>
+          <h2>Showcase setup is incomplete</h2>
+          <p>
+            The internal completed-build group must exist before adding builds.
+          </p>
         </section>
       )}
     </>
