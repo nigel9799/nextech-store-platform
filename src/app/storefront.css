@@ -2161,3 +2161,55 @@
     gap: 12px;
   }
 }
+
+/* Final portfolio sizing overrides (after all legacy storefront rules). */
+.showcase-carousel-frame {
+  width: min(100%, 570px);
+  aspect-ratio: 4 / 3;
+}
+.showcase-carousel-dots {
+  width: min(100%, 570px);
+}
+.showcase-gallery {
+  width: min(calc(100% - 44px), 1320px);
+  margin: 0 auto 100px;
+  padding: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  gap: 18px;
+  background: transparent;
+}
+.showcase-gallery > a {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.showcase-gallery figure,
+.showcase-gallery figure.wide {
+  grid-column: auto;
+  aspect-ratio: 4 / 3;
+  border: 1px solid #253035;
+  border-radius: 3px;
+}
+.showcase-gallery figcaption {
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  padding: 10px 12px;
+}
+.showcase-gallery figcaption small {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+@media (max-width: 980px) {
+  .showcase-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 620px) {
+  .showcase-gallery {
+    width: min(calc(100% - 32px), 1320px);
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
