@@ -171,7 +171,7 @@ export function BuildCard({ product }: { product: StorefrontProduct }) {
         ) : null}
         <div className="showcase-build-bottom">
           {price(product) ? <b>{price(product)}</b> : <b>Built to order</b>}
-          <Link href="/gallery-contact">Enquire about a build →</Link>
+          <Link href={`/builds/${product.slug}`}>View full case study →</Link>
         </div>
       </div>
     </article>

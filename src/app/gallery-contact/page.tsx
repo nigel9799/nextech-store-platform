@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ShowcaseContactForm } from "@/components/storefront/showcase-contact-form";
 import {
   ShowcaseFooter,
@@ -16,6 +17,7 @@ export default async function GalleryContactPage() {
       src,
       alt: `${product.name} photo ${index + 1}`,
       name: product.name,
+      slug: product.slug,
     })),
   );
   const images = gallery.length
@@ -23,6 +25,7 @@ export default async function GalleryContactPage() {
     : starterSlides.map((image, index) => ({
         ...image,
         name: index < 3 ? "Build 1" : "Build 2",
+        slug: index < 3 ? "build-1" : "build-2",
       }));
 
   return (
@@ -46,26 +49,25 @@ export default async function GalleryContactPage() {
         </section>
         <section className="showcase-gallery" id="gallery">
           {images.map((image, index) => (
-            <figure
-              key={`${image.src}-${index}`}
-              className={index % 5 === 0 ? "wide" : ""}
-            >
-              {image.src.startsWith("/") ? (
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  sizes="(max-width: 700px) 100vw, 50vw"
-                />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={image.src} alt={image.alt} />
-              )}
-              <figcaption>
-                <span>{image.name}</span>
-                <small>{String(index + 1).padStart(2, "0")}</small>
-              </figcaption>
-            </figure>
+            <Link href={`/builds/${image.slug}`} key={`${image.src}-${index}`}>
+              <figure>
+                {image.src.startsWith("/") ? (
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={image.src} alt={image.alt} />
+                )}
+                <figcaption>
+                  <span>{image.name}</span>
+                  <small>VIEW CASE STUDY →</small>
+                </figcaption>
+              </figure>
+            </Link>
           ))}
         </section>
         <section className="showcase-contact" id="contact">

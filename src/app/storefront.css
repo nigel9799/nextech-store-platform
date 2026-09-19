@@ -1117,6 +1117,194 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Refined portfolio sizing and case studies */
+.showcase-hero {
+  min-height: 720px;
+}
+.showcase-carousel {
+  align-items: center;
+  padding: clamp(28px, 4vw, 58px);
+}
+.showcase-carousel-frame {
+  width: min(100%, 570px);
+  aspect-ratio: 4 / 3;
+}
+.showcase-carousel-dots {
+  width: min(100%, 570px);
+}
+.showcase-gallery {
+  width: min(100% - 44px, 1320px);
+  margin: 0 auto 100px;
+  padding: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  gap: 18px;
+  background: transparent;
+}
+.showcase-gallery > a {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.showcase-gallery figure,
+.showcase-gallery figure.wide {
+  grid-column: auto;
+  aspect-ratio: 4 / 3;
+  border: 1px solid #253035;
+  border-radius: 3px;
+}
+.showcase-gallery figcaption {
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  padding: 10px 12px;
+}
+.showcase-gallery figcaption small {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+.case-study-hero {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.82fr) minmax(0, 1.18fr);
+  min-height: 680px;
+  border-bottom: 1px solid #222c30;
+}
+.case-study-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px clamp(28px, 6vw, 95px);
+  background: radial-gradient(
+    circle at 70% 25%,
+    rgb(37 144 164 / 14%),
+    transparent 38%
+  );
+}
+.case-study-copy h1 {
+  margin: 20px 0;
+  font-size: clamp(3.2rem, 7vw, 7.2rem);
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+}
+.case-study-copy > p:not(.showcase-kicker) {
+  max-width: 580px;
+  color: #adb8bb;
+  line-height: 1.75;
+}
+.case-study-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #2a3539;
+  color: #899599;
+}
+.case-study-meta strong {
+  color: #91ddea;
+}
+.case-study-cover {
+  position: relative;
+  min-height: 680px;
+  overflow: hidden;
+  background: #040607;
+}
+.case-study-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.case-study-details {
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  gap: clamp(40px, 8vw, 130px);
+  padding: 110px clamp(24px, 7vw, 110px);
+  background: #090d0f;
+}
+.case-study-details h2 {
+  margin: 15px 0 0;
+  font-size: clamp(2.7rem, 5vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+.case-study-description {
+  color: #b1bcbf;
+  font-size: 1rem;
+  line-height: 1.85;
+  white-space: pre-line;
+}
+.case-study-description p {
+  margin: 0;
+}
+.case-study-gallery {
+  display: grid;
+  width: min(100% - 44px, 1320px);
+  margin: 0 auto 110px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.case-study-gallery figure {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #253035;
+  background: #050708;
+}
+.case-study-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.case-study-gallery figure:hover img {
+  transform: scale(1.02);
+}
+.case-study-cta {
+  border-top: 1px solid #20292d;
+}
+@media (max-width: 1000px) {
+  .showcase-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .case-study-hero {
+    grid-template-columns: 1fr;
+  }
+  .case-study-cover {
+    min-height: min(80vw, 700px);
+  }
+}
+@media (max-width: 700px) {
+  .showcase-hero {
+    min-height: auto;
+  }
+  .showcase-carousel-frame {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+  .showcase-gallery,
+  .case-study-gallery {
+    width: min(100% - 32px, 620px);
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 14px;
+  }
+  .showcase-gallery figure,
+  .case-study-gallery figure {
+    aspect-ratio: 4 / 3;
+  }
+  .case-study-copy {
+    padding: 75px 22px;
+  }
+  .case-study-cover {
+    min-height: 105vw;
+  }
+  .case-study-details {
+    grid-template-columns: 1fr;
+    padding: 80px 22px;
+  }
+}
 @media (max-width: 580px) {
   .storefront-announcement {
     justify-content: flex-start;
