@@ -2060,8 +2060,17 @@
   color: #c8d1d3;
   font-size: 0.82rem;
 }
-.showcase-form label span {
+.showcase-field-label {
+  display: flex;
+  min-height: 18px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.showcase-field-label em {
   color: #778488;
+  font-size: 0.72rem;
+  font-style: normal;
 }
 .showcase-form input,
 .showcase-form select,
@@ -2080,6 +2089,10 @@
 }
 .showcase-form-actions button,
 .showcase-form-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 14px 19px;
   border: 1px solid var(--showcase-accent);
   background: var(--showcase-accent);
@@ -2087,6 +2100,17 @@
   font-weight: 750;
   text-decoration: none;
   cursor: pointer;
+}
+.messenger-icon {
+  flex: 0 0 auto;
+}
+.storefront-cart-button,
+.showcase-direct a,
+.storefront-footer-main a[href*="m.me"],
+.case-study-cta a[href*="m.me"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 .showcase-form-actions a {
   background: transparent;

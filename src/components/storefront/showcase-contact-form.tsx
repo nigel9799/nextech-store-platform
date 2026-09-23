@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { MessengerIcon } from "./messenger-icon";
 
 export function ShowcaseContactForm() {
   const [notice, setNotice] = useState("");
@@ -48,19 +49,21 @@ export function ShowcaseContactForm() {
     <form className="showcase-form" onSubmit={submit}>
       <div className="showcase-form-grid">
         <label>
-          Name
+          <span className="showcase-field-label">Name</span>
           <input name="name" required minLength={2} maxLength={120} />
         </label>
         <label>
-          Email
+          <span className="showcase-field-label">Email</span>
           <input name="email" type="email" required maxLength={254} />
         </label>
         <label>
-          Phone <span>Optional</span>
+          <span className="showcase-field-label">
+            Phone <em>Optional</em>
+          </span>
           <input name="phone" type="tel" maxLength={40} />
         </label>
         <label>
-          I’m interested in
+          <span className="showcase-field-label">I’m interested in</span>
           <select name="interest" required defaultValue="Custom PC build">
             <option>Custom PC build</option>
             <option>Completed build enquiry</option>
@@ -70,11 +73,13 @@ export function ShowcaseContactForm() {
         </label>
       </div>
       <label>
-        Approximate budget <span>Optional</span>
+        <span className="showcase-field-label">
+          Approximate budget <em>Optional</em>
+        </span>
         <input name="budget" maxLength={80} placeholder="e.g. €1,500" />
       </label>
       <label>
-        How can we help?
+        <span className="showcase-field-label">How can we help?</span>
         <textarea
           name="message"
           required
@@ -94,6 +99,7 @@ export function ShowcaseContactForm() {
           {submitting ? "Sending…" : "Send enquiry"}
         </button>
         <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+          <MessengerIcon />
           Message on Facebook
         </a>
       </div>

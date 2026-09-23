@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ShowcaseContactForm } from "@/components/storefront/showcase-contact-form";
+import { MessengerIcon } from "@/components/storefront/messenger-icon";
 import {
   ShowcaseFooter,
   ShowcaseHeader,
@@ -96,6 +97,7 @@ export default async function GalleryContactPage() {
                 </a>
               ) : null}
               <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+                <MessengerIcon />
                 Facebook Messenger ↗
               </a>
               <span>{storefront.config.contact.location}</span>

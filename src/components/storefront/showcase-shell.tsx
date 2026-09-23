@@ -8,6 +8,7 @@ import type {
   StorefrontProduct,
 } from "@/lib/storefront/types";
 import { ShowcaseContactForm } from "./showcase-contact-form";
+import { MessengerIcon } from "./messenger-icon";
 
 const starterSlides = [
   { src: "/showcase/build-1-main.webp", alt: "Nextech RGB gaming PC build" },
@@ -94,6 +95,7 @@ export function ShowcaseHeader({ config }: { config: StorefrontConfig }) {
           target="_blank"
           rel="noreferrer"
         >
+          <MessengerIcon />
           Messenger
         </a>
       </header>
@@ -122,6 +124,7 @@ export function ShowcaseFooter({ config }: { config: StorefrontConfig }) {
             </a>
           ) : null}
           <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+            <MessengerIcon />
             Facebook Messenger
           </a>
         </div>
@@ -191,16 +194,38 @@ export function ShowcaseHome({
   products: StorefrontProduct[];
 }) {
   const slides = useMemo(() => {
-    const productSlides = products.map((product) => ({
-      src:
-        product.imageUrl ??
-        product.imageUrls[0] ??
-        "/showcase/build-1-main.webp",
-      alt: product.imageAlt ?? product.name,
-      name: product.name,
-      slug: product.slug,
-      label: product.tag ?? product.sku,
-    }));
+    const isPreview = products.some((product) =>
+      product.id.startsWith("preview-"),
+    );
+    const productSlides = isPreview
+      ? products.flatMap((product) =>
+          (product.imageUrls.length
+            ? product.imageUrls
+            : [product.imageUrl ?? "/showcase/build-1-main.webp"]
+          ).map((src, index) => ({
+            src,
+            alt: `${product.name} photo ${index + 1}`,
+            name: product.name,
+            slug: product.slug,
+            label: index ? `Detail ${index + 1}` : (product.tag ?? product.sku),
+          })),
+        )
+      : products.map((product) => ({
+          src:
+            product.imageUrl ??
+            product.imageUrls[0] ??
+            "/showcase/build-1-main.webp",
+          alt: product.imageAlt ?? product.name,
+          name: product.name,
+          slug: product.slug,
+          label: product.tag ?? product.sku,
+        }));
+    if (isPreview && productSlides.length < 5 && productSlides.length) {
+      productSlides.push({
+        ...productSlides[0],
+        label: "Featured angle",
+      });
+    }
     return productSlides.length
       ? productSlides
       : starterSlides.map((slide, index) => ({
@@ -394,6 +419,7 @@ export function ShowcaseHome({
                 </a>
               ) : null}
               <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
+                <MessengerIcon />
                 Facebook Messenger ↗
               </a>
               <span>{config.contact.location}</span>

@@ -5,6 +5,7 @@ import {
   ShowcaseFooter,
   ShowcaseHeader,
 } from "@/components/storefront/showcase-shell";
+import { MessengerIcon } from "@/components/storefront/messenger-icon";
 import { getStorefrontData } from "@/lib/storefront/repository";
 
 export const dynamic = "force-dynamic";
@@ -126,6 +127,7 @@ export default async function BuildCaseStudyPage({
               target="_blank"
               rel="noreferrer"
             >
+              <MessengerIcon />
               Message on Facebook
             </a>
           </div>
