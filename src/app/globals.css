@@ -861,6 +861,89 @@ a {
   color: #627174;
   line-height: 1.6;
 }
+.admin-image-list {
+  display: grid;
+  gap: 10px;
+}
+.admin-image-item {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #d4dddd;
+  background: white;
+}
+.admin-image-item img {
+  width: 92px;
+  height: 68px;
+  object-fit: cover;
+  background: #111;
+}
+.admin-image-item > div:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+.admin-image-item span {
+  overflow: hidden;
+  color: #738083;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.admin-image-actions button {
+  min-height: 34px;
+  border: 1px solid #bdc9ca;
+  background: white;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.admin-image-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+.admin-image-actions button.danger {
+  border-color: #dfb7b7;
+  color: #a42525;
+}
+.admin-image-empty {
+  padding: 22px;
+  border: 1px dashed #bdc9ca;
+  color: #718083;
+  text-align: center;
+}
+.admin-image-url-import {
+  border-top: 1px solid #d4dddd;
+  padding-top: 16px;
+}
+.admin-image-url-import summary {
+  color: #257f91;
+  cursor: pointer;
+  font-weight: 700;
+}
+.admin-image-url-import label {
+  margin-top: 16px;
+}
+@media (max-width: 720px) {
+  .admin-image-item {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+  .admin-image-item img {
+    width: 76px;
+    height: 60px;
+  }
+  .admin-image-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
 .admin-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

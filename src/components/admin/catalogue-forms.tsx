@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import { BuildImageManager } from "./build-image-manager";
 import { NameSlugFields } from "./name-slug-fields";
 
 type Category = {
@@ -201,39 +202,7 @@ export function ProductForm({
           />
         </label>
       </div>
-      <fieldset className="admin-editor-section">
-        <legend>Build page images</legend>
-        <p>
-          The cover leads the build page. Gallery images appear underneath the
-          story and are also used across the public gallery.
-        </p>
-        <label>
-          Cover image URL <span>Optional</span>
-          <input
-            name="mainImageUrl"
-            type="url"
-            defaultValue={product?.imageUrls?.[0] ?? ""}
-            placeholder="https://example.com/build-cover.jpg"
-          />
-          <small>Use one large landscape image as the build cover.</small>
-        </label>
-        <label>
-          Gallery image URLs <span>Optional</span>
-          <textarea
-            name="galleryImageUrls"
-            maxLength={4000}
-            rows={7}
-            defaultValue={product?.imageUrls?.slice(1).join("\n") ?? ""}
-            placeholder={
-              "https://example.com/build-detail-1.jpg\nhttps://example.com/build-detail-2.jpg"
-            }
-          />
-          <small>
-            Add one direct HTTPS image URL per line. You can add up to eleven
-            gallery images in addition to the cover.
-          </small>
-        </label>
-      </fieldset>
+      <BuildImageManager initialImages={product?.imageUrls} />
       <label>
         Display order <span>{product ? "Required" : "Optional"}</span>
         <input
