@@ -21,6 +21,7 @@ const expected = [
   "0012_enquiry_comments.sql",
   "0013_showcase_build_details.sql",
   "0014_build_image_storage.sql",
+  "0015_gallery_visibility.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {

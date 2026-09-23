@@ -1456,6 +1456,195 @@
   }
 }
 
+/* Final carousel overrides: horizontal square covers with an orbiting arc. */
+.showcase-site .showcase-carousel-stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: clamp(360px, 42vw, 500px);
+  min-height: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  isolation: isolate;
+}
+.showcase-site .showcase-carousel-panel,
+.showcase-site .showcase-carousel-panel.is-active {
+  --square-size: clamp(178px, 21vw, 292px);
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: calc(20 - var(--card-distance));
+  width: var(--square-size);
+  height: var(--square-size);
+  min-width: 0;
+  aspect-ratio: 1;
+  flex: none;
+  border-color: #304149;
+  filter: saturate(calc(1 - var(--card-distance) * 0.13))
+    brightness(calc(1 - var(--card-distance) * 0.1));
+  transform: translate(-50%, -50%)
+    translateX(calc(var(--card-offset) * clamp(84px, 10vw, 142px)))
+    translateY(calc(var(--card-distance) * 24px))
+    rotate(calc(var(--card-offset) * 5deg))
+    scale(calc(1 - var(--card-distance) * 0.085));
+  transition:
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms ease,
+    border-color 320ms ease,
+    box-shadow 420ms ease;
+}
+.showcase-site .showcase-carousel-panel.is-active {
+  z-index: 30;
+  border-color: rgb(123 209 226 / 85%);
+  box-shadow:
+    0 34px 82px rgb(0 0 0 / 72%),
+    0 0 0 1px rgb(123 209 226 / 22%);
+  filter: saturate(1.06) brightness(1);
+  transform: translate(-50%, -56%) rotate(0) scale(1.1);
+}
+.showcase-site .showcase-carousel-panel > img,
+.showcase-site .showcase-carousel-panel.is-active > img {
+  transform: none;
+}
+.showcase-site .showcase-carousel-panel.is-active > img {
+  transform: scale(1.035);
+}
+.showcase-site .showcase-carousel-panel-copy {
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+}
+.showcase-site .showcase-carousel-panel-copy strong {
+  font-size: clamp(1rem, 2vw, 1.45rem);
+}
+.showcase-site .showcase-carousel-controls {
+  max-width: 760px;
+  justify-content: center;
+  padding-top: 4px;
+}
+@media (max-width: 620px) {
+  .showcase-site .showcase-carousel-stage {
+    height: 380px;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+  .showcase-site .showcase-carousel-panel,
+  .showcase-site .showcase-carousel-panel.is-active {
+    --square-size: min(64vw, 255px);
+    min-width: 0;
+    transform: translate(-50%, -50%) translateX(calc(var(--card-offset) * 34vw))
+      translateY(calc(var(--card-distance) * 18px))
+      rotate(calc(var(--card-offset) * 4deg))
+      scale(calc(1 - var(--card-distance) * 0.1));
+  }
+  .showcase-site .showcase-carousel-panel.is-active {
+    transform: translate(-50%, -55%) scale(1.06);
+  }
+}
+
+/* Horizontal vinyl-cover carousel: square cards orbit a shallow arc and
+   glide into focus when hovered, focused or selected with the controls. */
+.showcase-carousel-stage {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  height: clamp(360px, 42vw, 500px);
+  min-height: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  isolation: isolate;
+}
+.showcase-carousel-panel,
+.showcase-carousel-panel.is-active {
+  --square-size: clamp(178px, 21vw, 292px);
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: calc(20 - var(--card-distance));
+  width: var(--square-size);
+  height: var(--square-size);
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 1px solid #304149;
+  border-radius: 4px;
+  background: #050708;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 52%);
+  cursor: pointer;
+  filter: saturate(calc(1 - var(--card-distance) * 0.13))
+    brightness(calc(1 - var(--card-distance) * 0.1));
+  transform: translate(-50%, -50%)
+    translateX(calc(var(--card-offset) * clamp(84px, 10vw, 142px)))
+    translateY(calc(var(--card-distance) * 24px))
+    rotate(calc(var(--card-offset) * 5deg))
+    scale(calc(1 - var(--card-distance) * 0.085));
+  transition:
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms ease,
+    border-color 320ms ease,
+    box-shadow 420ms ease;
+}
+.showcase-carousel-panel.is-active {
+  z-index: 30;
+  border-color: rgb(123 209 226 / 85%);
+  box-shadow:
+    0 34px 82px rgb(0 0 0 / 72%),
+    0 0 0 1px rgb(123 209 226 / 22%);
+  filter: saturate(1.06) brightness(1);
+  transform: translate(-50%, -56%) translateX(0) rotate(0) scale(1.1);
+}
+.showcase-carousel-panel > img,
+.showcase-carousel-panel.is-active > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+  transition: transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.showcase-carousel-panel.is-active > img {
+  transform: scale(1.035);
+}
+.showcase-carousel-panel-copy {
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  gap: 3px;
+}
+.showcase-carousel-panel-copy strong {
+  font-size: clamp(1rem, 2vw, 1.45rem);
+}
+.showcase-carousel-controls {
+  max-width: 760px;
+  justify-content: center;
+  padding-top: 4px;
+}
+@media (max-width: 620px) {
+  .showcase-carousel-stage {
+    height: 380px;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+  .showcase-carousel-panel,
+  .showcase-carousel-panel.is-active {
+    --square-size: min(64vw, 255px);
+    min-width: 0;
+    transform: translate(-50%, -50%) translateX(calc(var(--card-offset) * 34vw))
+      translateY(calc(var(--card-distance) * 18px))
+      rotate(calc(var(--card-offset) * 4deg))
+      scale(calc(1 - var(--card-distance) * 0.1));
+  }
+  .showcase-carousel-panel.is-active {
+    transform: translate(-50%, -55%) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-carousel-panel,
+  .showcase-carousel-panel.is-active,
+  .showcase-carousel-panel > img {
+    transition: none;
+  }
+}
+
 /* Interactive build selector inspired by an expanding editorial carousel. */
 .showcase-carousel {
   align-items: stretch;
@@ -2386,5 +2575,84 @@
     width: min(calc(100% - 32px), 1320px);
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+}
+
+/* Production carousel: square covers travel horizontally around a shallow arc. */
+.showcase-site .showcase-carousel-stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: clamp(360px, 42vw, 500px);
+  min-height: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  isolation: isolate;
+}
+.showcase-site .showcase-carousel-panel,
+.showcase-site .showcase-carousel-panel.is-active {
+  --square-size: clamp(178px, 21vw, 292px);
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: calc(20 - var(--card-distance));
+  width: var(--square-size);
+  height: var(--square-size);
+  min-width: 0;
+  aspect-ratio: 1;
+  flex: none;
+  border-color: #304149;
+  filter: saturate(calc(1 - var(--card-distance) * 0.13))
+    brightness(calc(1 - var(--card-distance) * 0.1));
+  transform: translate(-50%, -50%)
+    translateX(calc(var(--card-offset) * clamp(84px, 10vw, 142px)))
+    translateY(calc(var(--card-distance) * 24px))
+    rotate(calc(var(--card-offset) * 5deg))
+    scale(calc(1 - var(--card-distance) * 0.085));
+  transition:
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms ease,
+    border-color 320ms ease,
+    box-shadow 420ms ease;
+}
+.showcase-site .showcase-carousel-panel.is-active {
+  z-index: 30;
+  border-color: rgb(123 209 226 / 85%);
+  box-shadow:
+    0 34px 82px rgb(0 0 0 / 72%),
+    0 0 0 1px rgb(123 209 226 / 22%);
+  filter: saturate(1.06) brightness(1);
+  transform: translate(-50%, -56%) rotate(0) scale(1.1);
+}
+.showcase-site .showcase-carousel-panel > img,
+.showcase-site .showcase-carousel-panel.is-active > img {
+  transform: none;
+}
+.showcase-site .showcase-carousel-panel.is-active > img {
+  transform: scale(1.035);
+}
+.showcase-site .showcase-carousel-controls {
+  max-width: 760px;
+  justify-content: center;
+  padding-top: 4px;
+}
+@media (max-width: 620px) {
+  .showcase-site .showcase-carousel-stage {
+    height: 380px;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+  .showcase-site .showcase-carousel-panel,
+  .showcase-site .showcase-carousel-panel.is-active {
+    --square-size: min(64vw, 255px);
+    min-width: 0;
+    transform: translate(-50%, -50%) translateX(calc(var(--card-offset) * 34vw))
+      translateY(calc(var(--card-distance) * 18px))
+      rotate(calc(var(--card-offset) * 4deg))
+      scale(calc(1 - var(--card-distance) * 0.1));
+  }
+  .showcase-site .showcase-carousel-panel.is-active {
+    transform: translate(-50%, -55%) scale(1.06);
   }
 }

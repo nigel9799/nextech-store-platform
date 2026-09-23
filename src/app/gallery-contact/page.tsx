@@ -13,14 +13,16 @@ export const dynamic = "force-dynamic";
 
 export default async function GalleryContactPage() {
   const storefront = await getStorefrontData();
-  const gallery = storefront.products.flatMap((product) =>
-    product.imageUrls.map((src, index) => ({
-      src,
-      alt: `${product.name} photo ${index + 1}`,
-      name: product.name,
-      slug: product.slug,
-    })),
-  );
+  const gallery = storefront.products
+    .filter((product) => product.showInGallery)
+    .flatMap((product) =>
+      product.imageUrls.map((src, index) => ({
+        src,
+        alt: `${product.name} photo ${index + 1}`,
+        name: product.name,
+        slug: product.slug,
+      })),
+    );
   const images = gallery.length
     ? gallery
     : starterSlides.map((image, index) => ({

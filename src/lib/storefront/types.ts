@@ -100,6 +100,7 @@ export type StorefrontProduct = {
   imageUrl: string | null;
   imageAlt: string | null;
   imageUrls: string[];
+  showInGallery: boolean;
   displayOrder: number;
 };
 

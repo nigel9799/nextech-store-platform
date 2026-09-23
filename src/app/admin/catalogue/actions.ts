@@ -63,6 +63,7 @@ async function nextOrder(
 
 function refreshCatalogue() {
   revalidatePath("/");
+  revalidatePath("/gallery-contact");
   revalidatePath("/admin");
   revalidatePath("/admin/catalogue/products");
   revalidatePath("/admin/catalogue/categories");
@@ -168,6 +169,7 @@ const productSchema = z.object({
   tag: z.string().trim().max(40),
   existingImageUrls: z.string().trim().max(6000),
   externalImageUrls: z.string().trim().max(4000),
+  showInGallery: z.boolean(),
 });
 
 const acceptedImageTypes = new Set([
@@ -264,6 +266,7 @@ function readProduct(formData: FormData) {
     tag: formData.get("tag") ?? "",
     existingImageUrls: formData.get("existingImageUrls") ?? "",
     externalImageUrls: formData.get("externalImageUrls") ?? "",
+    showInGallery: formData.get("showInGallery") === "on",
   });
   const order = parseOptionalOrder(formData.get("displayOrder"));
   const files = imageFiles(formData);
@@ -337,6 +340,7 @@ export async function createProductAction(formData: FormData) {
       currency_code: "EUR",
       status: product.status,
       tag: product.tag || null,
+      show_in_gallery: product.showInGallery,
       display_order:
         product.order ?? (await nextOrder("products", context.tenant.id)),
     })
@@ -398,6 +402,7 @@ export async function updateProductAction(formData: FormData) {
       old_price_minor: product.oldPriceMinor,
       status: product.status,
       tag: product.tag || null,
+      show_in_gallery: product.showInGallery,
       display_order: product.order,
     })
     .eq("id", id.data)

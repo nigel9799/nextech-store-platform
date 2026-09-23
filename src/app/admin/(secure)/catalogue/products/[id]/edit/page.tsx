@@ -20,7 +20,7 @@ export default async function EditProductPage({
       supabase
         .from("products")
         .select(
-          "id, name, slug, sku, category_id, short_spec, description, price_minor, old_price_minor, status, tag, display_order",
+          "id, name, slug, sku, category_id, short_spec, description, price_minor, old_price_minor, status, tag, show_in_gallery, display_order",
         )
         .eq("tenant_id", context.tenant.id)
         .eq("id", id)

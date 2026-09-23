@@ -160,6 +160,7 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
             ? primaryImage.alt_text
             : null,
         imageUrls: publishedImages.map((image) => image.storage_path as string),
+        showInGallery: product.show_in_gallery !== false,
         displayOrder: product.display_order,
       },
     ];
@@ -195,6 +196,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
           "/showcase/build-1-detail.webp",
           "/showcase/build-1-cooling.webp",
         ],
+        showInGallery: true,
         displayOrder: 0,
       },
       {
@@ -216,6 +218,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         imageUrl: "/showcase/build-2-setup.webp",
         imageAlt: "Nextech Build 2 gaming setup",
         imageUrls: ["/showcase/build-2-setup.webp"],
+        showInGallery: true,
         displayOrder: 1,
       },
     ];
@@ -250,7 +253,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       service
         .from("products")
         .select(
-          "id, category_id, slug, name, sku, short_spec, description, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
+          "id, category_id, slug, name, sku, short_spec, description, price_minor, old_price_minor, currency_code, tag, show_in_gallery, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
         )
         .eq("tenant_id", tenant.id)
         .eq("status", "live")
