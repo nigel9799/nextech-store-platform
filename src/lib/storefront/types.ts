@@ -110,10 +110,20 @@ export type StorefrontLegalPage = {
   body: string;
 };
 
+export type StorefrontGalleryImage = {
+  id: string;
+  src: string;
+  alt: string;
+  title: string | null;
+  buildSlug: string | null;
+  displayOrder: number;
+};
+
 export type StorefrontData = {
   tenant: { id: string; slug: string; businessName: string; hostname: string };
   config: StorefrontConfig;
   categories: StorefrontCategory[];
   products: StorefrontProduct[];
+  galleryImages: StorefrontGalleryImage[];
   legalPages: StorefrontLegalPage[];
 };

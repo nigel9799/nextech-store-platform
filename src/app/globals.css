@@ -929,7 +929,39 @@ a {
 .admin-image-url-import label {
   margin-top: 16px;
 }
+.admin-gallery-manager {
+  margin-top: 24px;
+}
+.admin-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 22px;
+}
+.admin-gallery-card {
+  padding: 14px;
+  border: 1px solid #cbd5d6;
+  background: #f6f8f8;
+}
+.admin-gallery-card > img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: #101516;
+}
+.admin-gallery-card .admin-form {
+  margin-top: 14px;
+}
+.admin-gallery-card > form:last-child {
+  margin-top: 10px;
+}
+.admin-text-button.danger {
+  color: #a42525;
+}
 @media (max-width: 720px) {
+  .admin-gallery-grid {
+    grid-template-columns: 1fr;
+  }
   .admin-image-item {
     grid-template-columns: 76px minmax(0, 1fr);
   }

@@ -24,9 +24,7 @@ export default async function ProductsPage({
   const query = await searchParams;
   const { data: products } = await supabase
     .from("products")
-    .select(
-      "id, name, slug, sku, price_minor, status, show_in_gallery, display_order",
-    )
+    .select("id, name, slug, sku, price_minor, status, display_order")
     .eq("tenant_id", context.tenant.id)
     .order("display_order");
 
@@ -63,7 +61,6 @@ export default async function ProductsPage({
                 <th>Build</th>
                 <th>Price</th>
                 <th>Status</th>
-                <th>Gallery</th>
                 <th>Order</th>
                 <th>Actions</th>
               </tr>
@@ -88,7 +85,6 @@ export default async function ProductsPage({
                         {product.status}
                       </span>
                     </td>
-                    <td>{product.show_in_gallery ? "Included" : "Hidden"}</td>
                     <td>{product.display_order}</td>
                     <td className="admin-row-actions">
                       <div>
@@ -119,7 +115,7 @@ export default async function ProductsPage({
               })}
               {!products?.length ? (
                 <tr>
-                  <td colSpan={6}>No builds yet. Add Build 1 to begin.</td>
+                  <td colSpan={5}>No builds yet. Add Build 1 to begin.</td>
                 </tr>
               ) : null}
             </tbody>

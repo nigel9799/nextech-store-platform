@@ -22,6 +22,7 @@ const expected = [
   "0013_showcase_build_details.sql",
   "0014_build_image_storage.sql",
   "0015_gallery_visibility.sql",
+  "0016_standalone_gallery.sql",
 ];
 
 if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -48,6 +49,7 @@ const tenantTables = [
   "product_categories",
   "products",
   "product_images",
+  "gallery_images",
   "enquiries",
   "enquiry_comments",
 ];

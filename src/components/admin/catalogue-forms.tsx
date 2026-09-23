@@ -38,6 +38,8 @@ export const errorMessages: Record<string, string> = {
   "category-in-use":
     "Move or remove the products in this category before deleting it.",
   "image-failed": "The product saved, but its image URL could not be saved.",
+  "gallery-failed":
+    "The build saved, but its photos could not be copied to the Gallery.",
   "save-failed": "The change could not be saved. Please try again.",
 };
 
@@ -206,16 +208,15 @@ export function ProductForm({
       <BuildImageManager initialImages={product?.imageUrls} />
       <label className="admin-check-option">
         <input
-          name="showInGallery"
+          name="addImagesToGallery"
           type="checkbox"
-          defaultChecked={product?.show_in_gallery ?? true}
+          defaultChecked={false}
         />
         <span>
-          <strong>Include this build in the public Gallery</strong>
+          <strong>Also add these photos to the public Gallery</strong>
           <small>
-            When enabled, this build&apos;s saved images appear on the Gallery
-            &amp; Contact page. Turn it off to keep the build page live without
-            adding its photos to the main gallery.
+            Copies any saved and newly uploaded build photos into the separate
+            Gallery. Existing Gallery photos are not duplicated.
           </small>
         </span>
       </label>
