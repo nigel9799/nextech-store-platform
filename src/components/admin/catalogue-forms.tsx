@@ -23,6 +23,7 @@ type Product = {
   old_price_minor: number | null;
   status: "draft" | "live" | "hidden" | "archived";
   tag: string | null;
+  show_in_gallery: boolean;
   display_order: number;
   imageUrls?: string[];
 };
@@ -203,6 +204,21 @@ export function ProductForm({
         </label>
       </div>
       <BuildImageManager initialImages={product?.imageUrls} />
+      <label className="admin-check-option">
+        <input
+          name="showInGallery"
+          type="checkbox"
+          defaultChecked={product?.show_in_gallery ?? true}
+        />
+        <span>
+          <strong>Include this build in the public Gallery</strong>
+          <small>
+            When enabled, this build&apos;s saved images appear on the Gallery
+            &amp; Contact page. Turn it off to keep the build page live without
+            adding its photos to the main gallery.
+          </small>
+        </span>
+      </label>
       <label>
         Display order <span>{product ? "Required" : "Optional"}</span>
         <input

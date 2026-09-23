@@ -279,30 +279,43 @@ export function ShowcaseHome({
             onMouseLeave={() => setPaused(false)}
           >
             <div className="showcase-carousel-stage">
-              {slides.map((slide, index) => (
-                <article
-                  key={`${slide.src}-${index}`}
-                  className={`showcase-carousel-panel${index === active ? " is-active" : ""}`}
-                  onMouseEnter={() => {
-                    setActive(index);
-                    setPaused(true);
-                  }}
-                  onFocus={() => {
-                    setActive(index);
-                    setPaused(true);
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={slide.src} alt={slide.alt} />
-                  <div className="showcase-carousel-panel-copy">
-                    <small>{slide.label}</small>
-                    <strong>{slide.name}</strong>
-                    {slide.slug ? (
-                      <Link href={`/builds/${slide.slug}`}>View build →</Link>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
+              {slides.map((slide, index) => {
+                const directOffset = index - active;
+                const wrappedOffset =
+                  Math.abs(directOffset) > slides.length / 2
+                    ? directOffset - Math.sign(directOffset) * slides.length
+                    : directOffset;
+                return (
+                  <article
+                    key={`${slide.src}-${index}`}
+                    className={`showcase-carousel-panel${index === active ? " is-active" : ""}`}
+                    style={
+                      {
+                        "--card-offset": wrappedOffset,
+                        "--card-distance": Math.abs(wrappedOffset),
+                      } as React.CSSProperties
+                    }
+                    onMouseEnter={() => {
+                      setActive(index);
+                      setPaused(true);
+                    }}
+                    onFocus={() => {
+                      setActive(index);
+                      setPaused(true);
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={slide.src} alt={slide.alt} />
+                    <div className="showcase-carousel-panel-copy">
+                      <small>{slide.label}</small>
+                      <strong>{slide.name}</strong>
+                      {slide.slug ? (
+                        <Link href={`/builds/${slide.slug}`}>View build →</Link>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
             <div className="showcase-carousel-controls">
               <button

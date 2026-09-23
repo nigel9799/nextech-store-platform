@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { logoutAction } from "@/app/admin/actions";
 import { requireAdminContext } from "@/lib/auth/context";
@@ -12,12 +13,16 @@ export default async function SecureAdminLayout({
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <Link className="admin-logo" href="/admin">
-          <strong>NX</strong>
-          <span>NEXTECH</span>
+        <Link className="admin-logo" href="/admin/catalogue/products">
+          <Image
+            src="/nextech-logo.png"
+            alt="Nextech"
+            width={500}
+            height={500}
+            priority
+          />
         </Link>
         <nav aria-label="Admin navigation">
-          <Link href="/admin">Overview</Link>
           {hasCapability(context.membership.role, "manage_catalogue") ? (
             <>
               <Link href="/admin/catalogue/products">Completed builds</Link>

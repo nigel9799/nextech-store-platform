@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 export function AuthCard({
@@ -12,7 +13,14 @@ export function AuthCard({
   return (
     <main className="auth-shell">
       <section className="auth-brand" aria-label="Nextech administration">
-        <span className="auth-brand-mark">NX</span>
+        <Image
+          className="auth-brand-logo"
+          src="/nextech-logo.png"
+          alt="Nextech"
+          width={500}
+          height={500}
+          priority
+        />
         <p>Secure administration</p>
         <h1>BUILT FOR CONTROL.</h1>
         <small>Tenant-aware · Role protected · Least privilege</small>

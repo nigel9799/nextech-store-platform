@@ -258,6 +258,7 @@ export const developmentSeedProducts: StorefrontProduct[] =
       imageUrl: null,
       imageAlt: null,
       imageUrls: [],
+      showInGallery: true,
       displayOrder: index,
     }),
   );
