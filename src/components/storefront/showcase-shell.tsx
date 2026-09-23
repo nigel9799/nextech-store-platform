@@ -116,6 +116,11 @@ export function ShowcaseFooter({ config }: { config: StorefrontConfig }) {
           <a href={`tel:${config.contact.phoneOne.replace(/\s/g, "")}`}>
             {config.contact.phoneOne}
           </a>
+          {config.contact.phoneTwo ? (
+            <a href={`tel:${config.contact.phoneTwo.replace(/\s/g, "")}`}>
+              {config.contact.phoneTwo}
+            </a>
+          ) : null}
           <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
             Facebook Messenger
           </a>
@@ -186,24 +191,36 @@ export function ShowcaseHome({
   products: StorefrontProduct[];
 }) {
   const slides = useMemo(() => {
-    const productSlides = products.flatMap((product) =>
-      product.imageUrls.map((src, index) => ({
-        src,
-        alt: `${product.name} photo ${index + 1}`,
-      })),
-    );
-    return productSlides.length ? productSlides : starterSlides;
+    const productSlides = products.map((product) => ({
+      src:
+        product.imageUrl ??
+        product.imageUrls[0] ??
+        "/showcase/build-1-main.webp",
+      alt: product.imageAlt ?? product.name,
+      name: product.name,
+      slug: product.slug,
+      label: product.tag ?? product.sku,
+    }));
+    return productSlides.length
+      ? productSlides
+      : starterSlides.map((slide, index) => ({
+          ...slide,
+          name: `Build ${index + 1}`,
+          slug: "",
+          label: "Completed build",
+        }));
   }, [products]);
   const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (slides.length < 2) return;
+    if (slides.length < 2 || paused) return;
     const timer = window.setInterval(
       () => setActive((current) => (current + 1) % slides.length),
-      5500,
+      4200,
     );
     return () => window.clearInterval(timer);
-  }, [slides.length]);
+  }, [paused, slides.length]);
 
   return (
     <div
@@ -234,24 +251,35 @@ export function ShowcaseHome({
           <div
             className="showcase-carousel"
             aria-label="Featured Nextech builds"
+            onMouseLeave={() => setPaused(false)}
           >
-            <div className="showcase-carousel-frame">
+            <div className="showcase-carousel-stage">
               {slides.map((slide, index) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <article
                   key={`${slide.src}-${index}`}
-                  className={index === active ? "is-active" : ""}
-                  src={slide.src}
-                  alt={slide.alt}
-                />
+                  className={`showcase-carousel-panel${index === active ? " is-active" : ""}`}
+                  onMouseEnter={() => {
+                    setActive(index);
+                    setPaused(true);
+                  }}
+                  onFocus={() => {
+                    setActive(index);
+                    setPaused(true);
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={slide.src} alt={slide.alt} />
+                  <div className="showcase-carousel-panel-copy">
+                    <small>{slide.label}</small>
+                    <strong>{slide.name}</strong>
+                    {slide.slug ? (
+                      <Link href={`/builds/${slide.slug}`}>View build →</Link>
+                    ) : null}
+                  </div>
+                </article>
               ))}
-              <div className="showcase-carousel-caption">
-                <small>FEATURED WORK</small>
-                <strong>
-                  {String(active + 1).padStart(2, "0")} /{" "}
-                  {String(slides.length).padStart(2, "0")}
-                </strong>
-              </div>
+            </div>
+            <div className="showcase-carousel-controls">
               <button
                 className="prev"
                 type="button"
@@ -270,17 +298,10 @@ export function ShowcaseHome({
               >
                 →
               </button>
-            </div>
-            <div className="showcase-carousel-dots">
-              {slides.map((slide, index) => (
-                <button
-                  key={`${slide.src}-dot-${index}`}
-                  className={index === active ? "is-active" : ""}
-                  type="button"
-                  aria-label={`Show image ${index + 1}`}
-                  onClick={() => setActive(index)}
-                />
-              ))}
+              <span>
+                {String(active + 1).padStart(2, "0")} /{" "}
+                {String(slides.length).padStart(2, "0")}
+              </span>
             </div>
           </div>
         </section>
@@ -364,6 +385,14 @@ export function ShowcaseHome({
               <a href={`mailto:${config.contact.email}`}>
                 {config.contact.email}
               </a>
+              <a href={`tel:${config.contact.phoneOne.replace(/\s/g, "")}`}>
+                {config.contact.phoneOne}
+              </a>
+              {config.contact.phoneTwo ? (
+                <a href={`tel:${config.contact.phoneTwo.replace(/\s/g, "")}`}>
+                  {config.contact.phoneTwo}
+                </a>
+              ) : null}
               <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
                 Facebook Messenger ↗
               </a>

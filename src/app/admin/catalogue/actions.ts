@@ -165,7 +165,8 @@ const productSchema = z.object({
   oldPrice: z.string().trim(),
   status: z.enum(statuses),
   tag: z.string().trim().max(40),
-  imageUrls: z.string().trim().max(4000),
+  mainImageUrl: z.string().trim().max(500),
+  galleryImageUrls: z.string().trim().max(4000),
 });
 
 async function saveProductImage(
@@ -208,19 +209,23 @@ function readProduct(formData: FormData) {
     oldPrice: formData.get("oldPrice") ?? "",
     status: formData.get("status"),
     tag: formData.get("tag") ?? "",
-    imageUrls: formData.get("imageUrls") ?? "",
+    mainImageUrl: formData.get("mainImageUrl") ?? "",
+    galleryImageUrls: formData.get("galleryImageUrls") ?? "",
   });
   const order = parseOptionalOrder(formData.get("displayOrder"));
   if (!parsed.success || Number.isNaN(order)) return null;
   const slug = parsed.data.slug || slugify(parsed.data.name);
-  const imageUrls = parsed.data.imageUrls
-    ? parsed.data.imageUrls
+  const galleryImageUrls = parsed.data.galleryImageUrls
+    ? parsed.data.galleryImageUrls
         .split(/\r?\n/)
         .map((value) => value.trim())
         .filter(Boolean)
     : [];
+  const imageUrls = [parsed.data.mainImageUrl, ...galleryImageUrls].filter(
+    Boolean,
+  );
   if (
-    imageUrls.length > 8 ||
+    imageUrls.length > 12 ||
     imageUrls.some((value) => {
       try {
         return new URL(value).protocol !== "https:" || value.length > 500;

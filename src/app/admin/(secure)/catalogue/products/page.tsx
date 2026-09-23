@@ -24,7 +24,7 @@ export default async function ProductsPage({
   const query = await searchParams;
   const { data: products } = await supabase
     .from("products")
-    .select("id, name, sku, price_minor, status, display_order")
+    .select("id, name, slug, sku, price_minor, status, display_order")
     .eq("tenant_id", context.tenant.id)
     .order("display_order");
 
@@ -33,8 +33,11 @@ export default async function ProductsPage({
       <div className="admin-heading admin-heading-row">
         <div>
           <p className="admin-eyebrow">Catalogue</p>
-          <h1>COMPLETED BUILDS</h1>
-          <p>Only builds marked Live appear on the public showcase.</p>
+          <h1>BUILD PAGES</h1>
+          <p>
+            Create each build like a blog post with a cover, gallery, story and
+            specifications. Only entries marked Live appear publicly.
+          </p>
         </div>
         <Link className="admin-button" href="/admin/catalogue/products/new">
           Add build
@@ -84,6 +87,9 @@ export default async function ProductsPage({
                     </td>
                     <td>{product.display_order}</td>
                     <td className="admin-row-actions">
+                      {product.status === "live" ? (
+                        <Link href={`/builds/${product.slug}`}>View</Link>
+                      ) : null}
                       <Link
                         href={`/admin/catalogue/products/${product.id}/edit`}
                       >

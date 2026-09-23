@@ -83,6 +83,18 @@ export default async function GalleryContactPage() {
               <a href={`mailto:${storefront.config.contact.email}`}>
                 {storefront.config.contact.email}
               </a>
+              <a
+                href={`tel:${storefront.config.contact.phoneOne.replace(/\s/g, "")}`}
+              >
+                {storefront.config.contact.phoneOne}
+              </a>
+              {storefront.config.contact.phoneTwo ? (
+                <a
+                  href={`tel:${storefront.config.contact.phoneTwo.replace(/\s/g, "")}`}
+                >
+                  {storefront.config.contact.phoneTwo}
+                </a>
+              ) : null}
               <a href="https://m.me/nextechmt" target="_blank" rel="noreferrer">
                 Facebook Messenger ↗
               </a>

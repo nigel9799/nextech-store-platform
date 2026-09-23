@@ -136,7 +136,7 @@ export function ProductForm({
         <small>Shown directly on the completed-build card.</small>
       </label>
       <label>
-        Full description and specifications <span>Optional</span>
+        Build story and specifications <span>Optional</span>
         <textarea
           name="description"
           maxLength={5000}
@@ -147,8 +147,8 @@ export function ProductForm({
           }
         />
         <small>
-          Add the purpose, design choices and as many component details as you
-          want.
+          This is the main article text on the build page. Add the client brief,
+          design choices, performance goals and component list.
         </small>
       </label>
       <div className="admin-form-grid">
@@ -201,23 +201,39 @@ export function ProductForm({
           />
         </label>
       </div>
-      <label>
-        Build image URLs <span>Optional</span>
-        <textarea
-          name="imageUrls"
-          maxLength={4000}
-          rows={5}
-          defaultValue={product?.imageUrls?.join("\n") ?? ""}
-          placeholder={
-            "https://example.com/build-main.jpg\nhttps://example.com/build-detail.jpg"
-          }
-        />
-        <small>
-          Add one direct HTTPS image URL per line, up to eight. The first image
-          is used as the main build card; all images appear in the gallery and
-          homepage carousel.
-        </small>
-      </label>
+      <fieldset className="admin-editor-section">
+        <legend>Build page images</legend>
+        <p>
+          The cover leads the build page. Gallery images appear underneath the
+          story and are also used across the public gallery.
+        </p>
+        <label>
+          Cover image URL <span>Optional</span>
+          <input
+            name="mainImageUrl"
+            type="url"
+            defaultValue={product?.imageUrls?.[0] ?? ""}
+            placeholder="https://example.com/build-cover.jpg"
+          />
+          <small>Use one large landscape image as the build cover.</small>
+        </label>
+        <label>
+          Gallery image URLs <span>Optional</span>
+          <textarea
+            name="galleryImageUrls"
+            maxLength={4000}
+            rows={7}
+            defaultValue={product?.imageUrls?.slice(1).join("\n") ?? ""}
+            placeholder={
+              "https://example.com/build-detail-1.jpg\nhttps://example.com/build-detail-2.jpg"
+            }
+          />
+          <small>
+            Add one direct HTTPS image URL per line. You can add up to eleven
+            gallery images in addition to the cover.
+          </small>
+        </label>
+      </fieldset>
       <label>
         Display order <span>{product ? "Required" : "Optional"}</span>
         <input
