@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdminContext } from "@/lib/auth/context";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -160,25 +161,71 @@ const productSchema = z.object({
   sku: z.string().trim().min(1).max(80),
   categoryId: z.string().uuid(),
   shortSpec: z.string().trim().min(1).max(240),
+  description: z.string().trim().max(5000),
   price: z.string().trim(),
   oldPrice: z.string().trim(),
   status: z.enum(statuses),
   tag: z.string().trim().max(40),
-  imageUrl: z.union([
-    z.literal(""),
-    z
-      .string()
-      .trim()
-      .url()
-      .regex(/^https:\/\//i)
-      .max(500),
-  ]),
+  existingImageUrls: z.string().trim().max(6000),
+  externalImageUrls: z.string().trim().max(4000),
 });
+
+const acceptedImageTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+]);
+
+function imageFiles(formData: FormData) {
+  const coverValue = formData.get("coverImage");
+  const cover =
+    coverValue instanceof File && coverValue.size > 0 ? coverValue : null;
+  const gallery = formData
+    .getAll("galleryImages")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+  const files = cover ? [cover, ...gallery] : gallery;
+  if (
+    files.some(
+      (file) =>
+        file.size > 8 * 1024 * 1024 || !acceptedImageTypes.has(file.type),
+    )
+  )
+    return null;
+  return { cover, gallery };
+}
+
+async function uploadProductImages(
+  productId: string,
+  tenantId: string,
+  files: { cover: File | null; gallery: File[] },
+) {
+  const service = createServiceRoleClient();
+  const uploaded: string[] = [];
+  for (const file of [files.cover, ...files.gallery].filter(
+    (value): value is File => value !== null,
+  )) {
+    const extension =
+      file.type === "image/jpeg" ? "jpg" : file.type.replace("image/", "");
+    const path = `${tenantId}/${productId}/${crypto.randomUUID()}.${extension}`;
+    const { error } = await service.storage
+      .from("build-images")
+      .upload(path, await file.arrayBuffer(), {
+        contentType: file.type,
+        cacheControl: "31536000",
+        upsert: false,
+      });
+    if (error) return { urls: uploaded, error };
+    const { data } = service.storage.from("build-images").getPublicUrl(path);
+    uploaded.push(data.publicUrl);
+  }
+  return { urls: uploaded, error: null };
+}
 
 async function saveProductImage(
   productId: string,
   tenantId: string,
-  imageUrl: string,
+  imageUrls: string[],
   altText: string,
 ) {
   const supabase = await createClient();
@@ -188,16 +235,18 @@ async function saveProductImage(
     .eq("tenant_id", tenantId)
     .eq("product_id", productId);
   if (deleteError) return deleteError;
-  if (!imageUrl) return null;
-  const { error } = await supabase.from("product_images").insert({
-    tenant_id: tenantId,
-    product_id: productId,
-    storage_path: imageUrl,
-    alt_text: altText,
-    display_order: 0,
-    is_primary: true,
-    status: "published",
-  });
+  if (!imageUrls.length) return null;
+  const { error } = await supabase.from("product_images").insert(
+    imageUrls.map((imageUrl, index) => ({
+      tenant_id: tenantId,
+      product_id: productId,
+      storage_path: imageUrl,
+      alt_text: `${altText}${index ? ` detail ${index + 1}` : ""}`,
+      display_order: index,
+      is_primary: index === 0,
+      status: "published",
+    })),
+  );
   return error;
 }
 
@@ -208,27 +257,63 @@ function readProduct(formData: FormData) {
     sku: formData.get("sku"),
     categoryId: formData.get("categoryId"),
     shortSpec: formData.get("shortSpec"),
+    description: formData.get("description") ?? "",
     price: formData.get("price"),
     oldPrice: formData.get("oldPrice") ?? "",
     status: formData.get("status"),
     tag: formData.get("tag") ?? "",
-    imageUrl: formData.get("imageUrl") ?? "",
+    existingImageUrls: formData.get("existingImageUrls") ?? "",
+    externalImageUrls: formData.get("externalImageUrls") ?? "",
   });
   const order = parseOptionalOrder(formData.get("displayOrder"));
-  if (!parsed.success || Number.isNaN(order)) return null;
+  const files = imageFiles(formData);
+  if (!parsed.success || !files || Number.isNaN(order)) return null;
   const slug = parsed.data.slug || slugify(parsed.data.name);
-  const priceMinor = parsePrice(parsed.data.price);
+  const existingImageUrls = parsed.data.existingImageUrls
+    ? parsed.data.existingImageUrls
+        .split(/\r?\n/)
+        .map((value) => value.trim())
+        .filter(Boolean)
+    : [];
+  const externalImageUrls = parsed.data.externalImageUrls
+    ? parsed.data.externalImageUrls
+        .split(/\r?\n/)
+        .map((value) => value.trim())
+        .filter(Boolean)
+    : [];
+  const imageUrls = [...existingImageUrls, ...externalImageUrls];
+  if (
+    imageUrls.length + (files.cover ? 1 : 0) + files.gallery.length > 12 ||
+    imageUrls.some((value) => {
+      try {
+        return new URL(value).protocol !== "https:" || value.length > 500;
+      } catch {
+        return true;
+      }
+    })
+  )
+    return null;
+  const priceMinor = parsed.data.price ? parsePrice(parsed.data.price) : null;
   const oldPriceMinor = parsed.data.oldPrice
     ? parsePrice(parsed.data.oldPrice)
     : null;
   if (
     !slugPattern.test(slug) ||
-    priceMinor === null ||
+    (parsed.data.price && priceMinor === null) ||
     (parsed.data.oldPrice && oldPriceMinor === null) ||
-    (oldPriceMinor !== null && oldPriceMinor < priceMinor)
+    (oldPriceMinor !== null &&
+      (priceMinor === null || oldPriceMinor < priceMinor))
   )
     return null;
-  return { ...parsed.data, slug, priceMinor, oldPriceMinor, order };
+  return {
+    ...parsed.data,
+    slug,
+    imageUrls,
+    priceMinor,
+    oldPriceMinor,
+    order,
+    files,
+  };
 }
 
 export async function createProductAction(formData: FormData) {
@@ -246,6 +331,7 @@ export async function createProductAction(formData: FormData) {
       slug: product.slug,
       sku: product.sku,
       short_spec: product.shortSpec,
+      description: product.description || null,
       price_minor: product.priceMinor,
       old_price_minor: product.oldPriceMinor,
       currency_code: "EUR",
@@ -262,12 +348,26 @@ export async function createProductAction(formData: FormData) {
       "error",
       catalogueError(error ?? {}),
     );
-  const imageError = await saveProductImage(
+  const upload = await uploadProductImages(
     data.id,
     context.tenant.id,
-    product.imageUrl,
-    product.name,
+    product.files,
   );
+  const uploadedCover = product.files.cover ? upload.urls[0] : null;
+  const uploadedGallery = product.files.cover
+    ? upload.urls.slice(1)
+    : upload.urls;
+  const imageUrls = uploadedCover
+    ? [uploadedCover, ...product.imageUrls, ...uploadedGallery]
+    : [...product.imageUrls, ...uploadedGallery];
+  const imageError =
+    upload.error ??
+    (await saveProductImage(
+      data.id,
+      context.tenant.id,
+      imageUrls,
+      product.name,
+    ));
   if (imageError)
     destination(
       `/admin/catalogue/products/${data.id}/edit`,
@@ -293,6 +393,7 @@ export async function updateProductAction(formData: FormData) {
       slug: product.slug,
       sku: product.sku,
       short_spec: product.shortSpec,
+      description: product.description || null,
       price_minor: product.priceMinor,
       old_price_minor: product.oldPriceMinor,
       status: product.status,
@@ -303,12 +404,26 @@ export async function updateProductAction(formData: FormData) {
     .eq("tenant_id", context.tenant.id);
   if (error)
     destination("/admin/catalogue/products", "error", catalogueError(error));
-  const imageError = await saveProductImage(
+  const upload = await uploadProductImages(
     id.data,
     context.tenant.id,
-    product.imageUrl,
-    product.name,
+    product.files,
   );
+  const uploadedCover = product.files.cover ? upload.urls[0] : null;
+  const uploadedGallery = product.files.cover
+    ? upload.urls.slice(1)
+    : upload.urls;
+  const imageUrls = uploadedCover
+    ? [uploadedCover, ...product.imageUrls, ...uploadedGallery]
+    : [...product.imageUrls, ...uploadedGallery];
+  const imageError =
+    upload.error ??
+    (await saveProductImage(
+      id.data,
+      context.tenant.id,
+      imageUrls,
+      product.name,
+    ));
   if (imageError)
     destination(
       `/admin/catalogue/products/${id.data}/edit`,

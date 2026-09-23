@@ -106,6 +106,17 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
         image.status === "published" &&
         typeof image.storage_path === "string",
     );
+    const publishedImages = images
+      .filter(
+        (image) =>
+          image.status === "published" &&
+          typeof image.storage_path === "string",
+      )
+      .sort(
+        (left, right) =>
+          (typeof left.display_order === "number" ? left.display_order : 0) -
+          (typeof right.display_order === "number" ? right.display_order : 0),
+      );
     if (
       typeof product.id !== "string" ||
       typeof product.category_id !== "string" ||
@@ -115,7 +126,6 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
       typeof product.slug !== "string" ||
       typeof product.sku !== "string" ||
       typeof product.short_spec !== "string" ||
-      typeof product.price_minor !== "number" ||
       typeof product.currency_code !== "string" ||
       typeof product.display_order !== "number" ||
       categoryRecord.is_visible === false
@@ -131,7 +141,10 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
         slug: product.slug,
         sku: product.sku,
         shortSpec: product.short_spec,
-        priceMinor: product.price_minor,
+        description:
+          typeof product.description === "string" ? product.description : null,
+        priceMinor:
+          typeof product.price_minor === "number" ? product.price_minor : null,
         oldPriceMinor:
           typeof product.old_price_minor === "number"
             ? product.old_price_minor
@@ -146,6 +159,7 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
           primaryImage && typeof primaryImage.alt_text === "string"
             ? primaryImage.alt_text
             : null,
+        imageUrls: publishedImages.map((image) => image.storage_path as string),
         displayOrder: product.display_order,
       },
     ];
@@ -153,9 +167,74 @@ function mapProducts(rows: unknown[]): StorefrontProduct[] {
 }
 
 export async function getStorefrontData(): Promise<StorefrontData> {
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    const previewProducts: StorefrontProduct[] = [
+      {
+        id: "preview-build-1",
+        categoryId: "preview-completed-builds",
+        categorySlug: "completed-builds",
+        categoryName: "Completed Builds",
+        name: "Build 1",
+        slug: "build-1",
+        sku: "BUILD-001",
+        shortSpec:
+          "A premium RGB gaming system with meticulous cable management and a clean panoramic finish.",
+        description:
+          "Use this space to describe the client brief, performance goals and component choices. Add the full CPU, GPU, memory, storage, cooling, case and power-supply specification from the admin portal.",
+        priceMinor: null,
+        oldPriceMinor: null,
+        currencyCode: "EUR",
+        tag: "Featured build",
+        imageUrl: "/showcase/build-1-main.webp",
+        imageAlt: "Nextech Build 1",
+        imageUrls: [
+          "/showcase/build-1-main.webp",
+          "/showcase/build-1-detail.webp",
+          "/showcase/build-1-cooling.webp",
+        ],
+        displayOrder: 0,
+      },
+      {
+        id: "preview-build-2",
+        categoryId: "preview-completed-builds",
+        categorySlug: "completed-builds",
+        categoryName: "Completed Builds",
+        name: "Build 2",
+        slug: "build-2",
+        sku: "BUILD-002",
+        shortSpec:
+          "A striking complete gaming setup built for immersive performance and a bold RGB aesthetic.",
+        description:
+          "Use this area for the complete build story and detailed specifications. Pricing can remain blank when the system is displayed purely as previous work.",
+        priceMinor: null,
+        oldPriceMinor: null,
+        currencyCode: "EUR",
+        tag: "Completed setup",
+        imageUrl: "/showcase/build-2-setup.webp",
+        imageAlt: "Nextech Build 2 gaming setup",
+        imageUrls: ["/showcase/build-2-setup.webp"],
+        displayOrder: 1,
+      },
+    ];
+    return {
+      tenant: {
+        id: "preview",
+        slug: "nextech",
+        businessName: "Nextech Malta",
+        hostname: process.env.VERCEL_URL ?? "preview.vercel.app",
+      },
+      config: defaultStorefrontConfig,
+      categories: [],
+      products: previewProducts,
+      legalPages: [],
+    };
+  }
   const tenant = await resolveRequestTenant();
   const service = createServiceRoleClient();
-  const [settingsResult, categoriesResult, productsResult, legalResult] =
+  const [settingsResult, categoriesResult, initialProductsResult, legalResult] =
     await Promise.all([
       service
         .from("site_settings")
@@ -171,7 +250,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       service
         .from("products")
         .select(
-          "id, category_id, slug, name, sku, short_spec, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, is_primary, status)",
+          "id, category_id, slug, name, sku, short_spec, description, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
         )
         .eq("tenant_id", tenant.id)
         .eq("status", "live")
@@ -182,12 +261,27 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         .eq("tenant_id", tenant.id)
         .eq("is_published", true),
     ]);
-  const firstError = [
-    settingsResult,
-    categoriesResult,
-    productsResult,
-    legalResult,
-  ].find((result) => result.error)?.error;
+  let productRows: unknown[] = initialProductsResult.data ?? [];
+  let productError = initialProductsResult.error;
+  if (
+    productError?.code === "42703" &&
+    productError.message.includes("description")
+  ) {
+    const legacyProductsResult = await service
+      .from("products")
+      .select(
+        "id, category_id, slug, name, sku, short_spec, price_minor, old_price_minor, currency_code, tag, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
+      )
+      .eq("tenant_id", tenant.id)
+      .eq("status", "live")
+      .order("display_order");
+    productRows = legacyProductsResult.data ?? [];
+    productError = legacyProductsResult.error;
+  }
+  const firstError =
+    [settingsResult, categoriesResult, legalResult].find(
+      (result) => result.error,
+    )?.error ?? productError;
   if (firstError)
     throw new Error(
       `Storefront data could not be loaded: ${firstError.message}`,
@@ -204,7 +298,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         })),
       ]
     : defaultStorefrontCategories;
-  const mappedProducts = mapProducts(productsResult.data ?? []);
+  const mappedProducts = mapProducts(productRows);
   const config = mergeConfig(settingsResult.data?.settings);
   const legalPages: StorefrontLegalPage[] = (legalResult.data ?? []).flatMap(
     (page) => {

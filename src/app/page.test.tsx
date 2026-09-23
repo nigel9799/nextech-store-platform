@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { StorefrontShell } from "@/components/storefront/storefront-shell";
+import { ShowcaseHome } from "@/components/storefront/showcase-shell";
 import {
-  defaultStorefrontCategories,
   defaultStorefrontConfig,
   developmentSeedProducts,
 } from "@/lib/storefront/defaults";
@@ -17,19 +16,23 @@ vi.mock("next/image", () => ({
 /* eslint-enable @next/next/no-img-element */
 
 describe("storefront page", () => {
-  it("renders the catalogue and launch enquiry guidance", () => {
+  it("renders the completed-build showcase and primary calls to action", () => {
     render(
-      <StorefrontShell
+      <ShowcaseHome
         config={defaultStorefrontConfig}
-        categories={defaultStorefrontCategories}
         products={developmentSeedProducts}
       />,
     );
-    expect(document.querySelector("#hero-title")).toBeVisible();
-    expect(screen.getAllByText("Prebuilt PCs").length).toBeGreaterThan(0);
-    expect(screen.getByText(/emailed to Nextech/i)).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /Send through WhatsApp/i }),
+      screen.getByRole("heading", { name: /PC builds that/i }),
     ).toBeVisible();
+    expect(screen.getByRole("heading", { name: "PREBUILDS." })).toBeVisible();
+    expect(
+      screen.getAllByRole("link", { name: /Contact us/i }).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "Messenger" })).toHaveAttribute(
+      "href",
+      "https://m.me/nextechmt",
+    );
   });
 });

@@ -11,9 +11,11 @@ export default async function AdminDashboard({
   return (
     <>
       <div className="admin-heading">
-        <p className="admin-eyebrow">Nextech store</p>
+        <p className="admin-eyebrow">Nextech website</p>
         <h1>ADMIN OVERVIEW</h1>
-        <p>Manage the live catalogue and essential website settings.</p>
+        <p>
+          Manage completed builds, enquiries and essential website settings.
+        </p>
       </div>
       {query.notice === "forbidden" ? (
         <p className="form-notice form-notice-error" role="alert">
@@ -39,18 +41,18 @@ export default async function AdminDashboard({
       </section>
       <section className="admin-quick-links" aria-label="Store management">
         <a href="/admin/catalogue/products">
-          <small>CATALOGUE</small>
-          <strong>Manage products</strong>
-          <span>Add, price, publish or archive products →</span>
+          <small>SHOWCASE</small>
+          <strong>Manage completed builds</strong>
+          <span>Add photos, specifications and optional pricing →</span>
         </a>
-        <a href="/admin/catalogue/categories">
-          <small>ORGANISATION</small>
-          <strong>Manage categories</strong>
-          <span>Control storefront product groups →</span>
+        <a href="/admin/enquiries">
+          <small>CUSTOMERS</small>
+          <strong>Manage enquiries</strong>
+          <span>Review and follow up website requests →</span>
         </a>
         <a href="/admin/settings">
           <small>WEBSITE</small>
-          <strong>Store settings</strong>
+          <strong>Website settings</strong>
           <span>Update branding and contact details →</span>
         </a>
       </section>

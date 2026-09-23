@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import { BuildImageManager } from "./build-image-manager";
 import { NameSlugFields } from "./name-slug-fields";
 
 type Category = {
@@ -17,12 +18,13 @@ type Product = {
   sku: string;
   category_id: string;
   short_spec: string;
-  price_minor: number;
+  description: string | null;
+  price_minor: number | null;
   old_price_minor: number | null;
   status: "draft" | "live" | "hidden" | "archived";
   tag: string | null;
   display_order: number;
-  imageUrl?: string;
+  imageUrls?: string[];
 };
 
 type FormAction = ComponentProps<"form">["action"];
@@ -107,56 +109,63 @@ export function ProductForm({
       />
       <div className="admin-form-grid">
         <label>
-          SKU <span>Required</span>
+          Build reference <span>Required</span>
           <input
             name="sku"
             required
             maxLength={80}
             defaultValue={product?.sku}
-            placeholder="e.g. GPU-RTX5070TI-16GB"
+            placeholder="e.g. BUILD-001"
           />
-          <small>Unique internal stock reference.</small>
+          <small>Unique internal reference for this completed build.</small>
         </label>
-        <label>
-          Category <span>Required</span>
-          <select
-            name="categoryId"
-            required
-            defaultValue={product?.category_id ?? ""}
-          >
-            <option value="" disabled>
-              Select a category
-            </option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <input
+          type="hidden"
+          name="categoryId"
+          value={product?.category_id ?? categories[0]?.id ?? ""}
+        />
       </div>
       <label>
-        Short specification <span>Required</span>
+        Short introduction <span>Required</span>
         <input
           name="shortSpec"
           required
           maxLength={240}
           defaultValue={product?.short_spec}
-          placeholder="e.g. 8 cores · AM5 · Gaming CPU"
+          placeholder="A clean, high-performance gaming build created for smooth 1440p play."
         />
-        <small>Shown directly on the storefront product card.</small>
+        <small>Shown directly on the completed-build card.</small>
+      </label>
+      <label>
+        Build story and specifications <span>Optional</span>
+        <textarea
+          name="description"
+          maxLength={5000}
+          rows={9}
+          defaultValue={product?.description ?? ""}
+          placeholder={
+            "Tell the story behind the build, then list its key components.\n\nCPU:\nGPU:\nMotherboard:\nMemory:\nStorage:\nCooling:\nCase:\nPower supply:"
+          }
+        />
+        <small>
+          This is the main article text on the build page. Add the client brief,
+          design choices, performance goals and component list.
+        </small>
       </label>
       <div className="admin-form-grid">
         <label>
-          Price in EUR <span>Required</span>
+          Price in EUR <span>Optional</span>
           <input
             name="price"
-            required
             inputMode="decimal"
-            defaultValue={product ? (product.price_minor / 100).toFixed(2) : ""}
+            defaultValue={
+              typeof product?.price_minor === "number"
+                ? (product.price_minor / 100).toFixed(2)
+                : ""
+            }
             placeholder="129.99"
           />
-          <small>Final VAT-inclusive retail price.</small>
+          <small>Leave blank when the build is showcase-only.</small>
         </label>
         <label>
           Previous price in EUR <span>Optional</span>
@@ -184,7 +193,7 @@ export function ProductForm({
           </select>
         </label>
         <label>
-          Product tag <span>Optional</span>
+          Showcase tag <span>Optional</span>
           <input
             name="tag"
             maxLength={40}
@@ -193,20 +202,7 @@ export function ProductForm({
           />
         </label>
       </div>
-      <label>
-        Product image URL <span>Optional</span>
-        <input
-          name="imageUrl"
-          type="url"
-          maxLength={500}
-          defaultValue={product?.imageUrl ?? ""}
-          placeholder="https://supplier.example/product.jpg"
-        />
-        <small>
-          Use a direct HTTPS image link. A branded placeholder is used when
-          blank.
-        </small>
-      </label>
+      <BuildImageManager initialImages={product?.imageUrls} />
       <label>
         Display order <span>{product ? "Required" : "Optional"}</span>
         <input
@@ -221,7 +217,7 @@ export function ProductForm({
       </label>
       <div className="admin-form-actions">
         <button className="admin-button" type="submit">
-          {product ? "Save product" : "Create product"}
+          {product ? "Save build" : "Create build"}
         </button>
         <Link href="/admin/catalogue/products">Cancel</Link>
       </div>

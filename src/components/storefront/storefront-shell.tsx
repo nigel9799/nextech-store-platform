@@ -178,7 +178,13 @@ export function StorefrontShell({
     });
   }, [activeCategory, products, query]);
 
-  const cartTotal = cart.reduce((sum, product) => sum + product.priceMinor, 0);
+  const cartHasUnpricedBuild = cart.some(
+    (product) => product.priceMinor === null,
+  );
+  const cartTotal = cart.reduce(
+    (sum, product) => sum + (product.priceMinor ?? 0),
+    0,
+  );
   const selectedCategory = categories.find(
     (category) => category.slug === activeCategory,
   );
@@ -414,19 +420,29 @@ export function StorefrontShell({
                     <span className="storefront-product-spec">
                       {product.shortSpec}
                     </span>
-                    <div className="storefront-price">
-                      <b>
-                        {formatPrice(product.priceMinor, product.currencyCode)}
-                      </b>
-                      {product.oldPriceMinor ? (
-                        <del>
+                    {product.description ? (
+                      <p className="storefront-product-description">
+                        {product.description}
+                      </p>
+                    ) : null}
+                    {product.priceMinor !== null ? (
+                      <div className="storefront-price">
+                        <b>
                           {formatPrice(
-                            product.oldPriceMinor,
+                            product.priceMinor,
                             product.currencyCode,
                           )}
-                        </del>
-                      ) : null}
-                    </div>
+                        </b>
+                        {product.oldPriceMinor ? (
+                          <del>
+                            {formatPrice(
+                              product.oldPriceMinor,
+                              product.currencyCode,
+                            )}
+                          </del>
+                        ) : null}
+                      </div>
+                    ) : null}
                     <button type="button" onClick={() => addToCart(product)}>
                       {config.shop.addButton} <b aria-hidden="true">＋</b>
                     </button>
@@ -725,7 +741,9 @@ export function StorefrontShell({
                   <div>
                     <b>{product.name}</b>
                     <span>
-                      {formatPrice(product.priceMinor, product.currencyCode)}
+                      {product.priceMinor === null
+                        ? "Price on request"
+                        : formatPrice(product.priceMinor, product.currencyCode)}
                     </span>
                   </div>
                   <button
@@ -741,7 +759,11 @@ export function StorefrontShell({
             <div className="storefront-cart-total">
               <p>
                 <span>Estimated total</span>
-                <b>{formatPrice(cartTotal, cart[0].currencyCode)}</b>
+                <b>
+                  {cartHasUnpricedBuild
+                    ? "Price on request"
+                    : formatPrice(cartTotal, cart[0].currencyCode)}
+                </b>
               </p>
               <small>
                 No payment is taken online. Nextech will confirm availability,
@@ -755,9 +777,11 @@ export function StorefrontShell({
                       "I would like to enquire about this cart:",
                       ...cart.map(
                         (product, index) =>
-                          `${index + 1}. ${product.name} — ${formatPrice(product.priceMinor, product.currencyCode)}`,
+                          `${index + 1}. ${product.name} — ${product.priceMinor === null ? "Price on request" : formatPrice(product.priceMinor, product.currencyCode)}`,
                       ),
-                      `Estimated total: ${formatPrice(cartTotal, cart[0].currencyCode)}`,
+                      cartHasUnpricedBuild
+                        ? "Pricing: Please provide a quote."
+                        : `Estimated total: ${formatPrice(cartTotal, cart[0].currencyCode)}`,
                       "Please confirm availability and the next steps.",
                     ].join("\n"),
                   );

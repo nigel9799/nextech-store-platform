@@ -11,7 +11,11 @@ type EnquiryEmail = {
   interest: string;
   budget?: string;
   message: string;
-  cartItems: Array<{ name: string; sku: string; priceMinor: number }>;
+  cartItems: Array<{
+    name: string;
+    sku: string;
+    priceMinor: number | null;
+  }>;
   estimatedTotalMinor?: number;
 };
 
@@ -36,9 +40,11 @@ export async function sendEnquiryEmail(input: EnquiryEmail) {
     ? `<h2>Requested products</h2><ul>${input.cartItems
         .map(
           (item) =>
-            `<li>${escapeHtml(item.name)} (${escapeHtml(item.sku)}) — €${(
-              item.priceMinor / 100
-            ).toFixed(2)}</li>`,
+            `<li>${escapeHtml(item.name)} (${escapeHtml(item.sku)}) — ${
+              item.priceMinor === null
+                ? "Price on request"
+                : `€${(item.priceMinor / 100).toFixed(2)}`
+            }</li>`,
         )
         .join("")}</ul>`
     : "";
