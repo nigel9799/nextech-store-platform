@@ -38,11 +38,13 @@ export function ShowcaseHeader({ config }: { config: StorefrontConfig }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
-      <div className="storefront-announcement" role="status">
-        <span aria-hidden="true">●</span>
-        Custom PCs built locally in Malta
-        <Link href="/#prebuilds">VIEW BUILDS</Link>
-      </div>
+      {config.announcementEnabled ? (
+        <div className="storefront-announcement" role="status">
+          <span aria-hidden="true">●</span>
+          {config.announcementText}
+          <Link href="/#prebuilds">VIEW BUILDS</Link>
+        </div>
+      ) : null}
       <header className="storefront-header">
         <Link className="storefront-brand" href="/" aria-label="Nextech home">
           <Image
@@ -179,7 +181,7 @@ export function BuildCard({ product }: { product: StorefrontProduct }) {
         ) : null}
         <div className="showcase-build-bottom">
           {price(product) ? <b>{price(product)}</b> : <b>Built to order</b>}
-          <Link href={`/builds/${product.slug}`}>View full case study →</Link>
+          <Link href={`/builds/${product.slug}`}>View build →</Link>
         </div>
       </div>
     </article>

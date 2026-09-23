@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 import { BuildImageManager } from "./build-image-manager";
+import { FormDraftRecovery } from "./form-draft-recovery";
 import { NameSlugFields } from "./name-slug-fields";
 
 type Category = {
@@ -97,13 +98,24 @@ export function ProductForm({
   action,
   categories,
   product,
+  preserveDraft = false,
 }: {
   action: FormAction;
   categories: Category[];
   product?: Product;
+  preserveDraft?: boolean;
 }) {
   return (
-    <form className="admin-form admin-editor" action={action}>
+    <form
+      id="product-editor-form"
+      className="admin-form admin-editor"
+      action={action}
+    >
+      <FormDraftRecovery
+        formId="product-editor-form"
+        restore={preserveDraft}
+        storageKey="nextech-admin-build-draft"
+      />
       {product ? <input type="hidden" name="id" value={product.id} /> : null}
       <NameSlugFields
         itemLabel="Product"

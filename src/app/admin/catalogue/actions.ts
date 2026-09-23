@@ -431,8 +431,13 @@ export async function updateProductAction(formData: FormData) {
   const context = await requireAdminContext("manage_catalogue");
   const id = z.string().uuid().safeParse(formData.get("id"));
   const product = readProduct(formData);
-  if (!id.success || !product || product.order === null)
-    destination("/admin/catalogue/products", "error", "invalid");
+  if (!id.success) destination("/admin/catalogue/products", "error", "invalid");
+  if (!product || product.order === null)
+    destination(
+      `/admin/catalogue/products/${id.data}/edit`,
+      "error",
+      "invalid",
+    );
   const supabase = await createClient();
   const { error } = await supabase
     .from("products")
@@ -577,6 +582,7 @@ export async function updateSettingsAction(formData: FormData) {
     .upsert({ tenant_id: context.tenant.id, settings });
   if (error) destination("/admin/settings", "error", "save-failed");
   revalidatePath("/");
+  revalidatePath("/gallery-contact");
   revalidatePath("/admin/settings");
   destination("/admin/settings", "notice", "updated");
 }

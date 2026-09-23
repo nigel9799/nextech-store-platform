@@ -43,6 +43,7 @@ export default async function LoginPage({
       </form>
       <div className="auth-links">
         <Link href="/admin/forgot-password">Forgot password?</Link>
+        <Link href="/">Back to website</Link>
       </div>
       <p className="auth-help">
         Accounts are invitation-only. Contact the Nextech owner if you need

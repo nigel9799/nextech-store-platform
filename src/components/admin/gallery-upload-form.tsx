@@ -12,7 +12,7 @@ export function GalleryUploadForm({ action }: Props) {
   return (
     <form className="admin-form admin-editor" action={action}>
       <label>
-        Gallery images <span>Required</span>
+        Upload photos <span>Required</span>
         <input
           name="images"
           type="file"

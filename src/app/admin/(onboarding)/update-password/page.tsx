@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { updatePasswordAction } from "@/app/admin/actions";
 import { AuthCard } from "@/components/admin/auth-card";
 import { Notice } from "@/components/admin/notice";
@@ -31,6 +32,9 @@ export default async function UpdatePasswordPage({
           Save password
         </button>
       </form>
+      <div className="auth-links">
+        <Link href="/admin">Back to admin</Link>
+      </div>
     </AuthCard>
   );
 }
