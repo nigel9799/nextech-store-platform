@@ -2038,6 +2038,51 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 25px;
 }
+.showcase-build-carousel-wrap {
+  min-width: 0;
+}
+.showcase-build-carousel {
+  min-width: 0;
+}
+.showcase-build-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 0 max(22px, calc((100vw - 1680px) / 2)) 12px 0;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: #26363b transparent;
+  scrollbar-width: thin;
+}
+.showcase-build-track .showcase-build-card {
+  flex: 0 0 min(72vw, 680px);
+  scroll-snap-align: start;
+}
+.showcase-build-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.showcase-build-controls button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #334247;
+  border-radius: 50%;
+  background: transparent;
+  color: #dce7e9;
+  cursor: pointer;
+}
+.showcase-build-controls button:hover {
+  border-color: var(--showcase-accent);
+  color: var(--showcase-accent);
+}
+.showcase-build-controls span {
+  margin-left: 8px;
+  color: #77868a;
+  font: 600 0.64rem var(--font-geist-mono);
+  letter-spacing: 0.12em;
+}
 .showcase-build-card {
   overflow: hidden;
   border: 1px solid #222c30;
@@ -2411,6 +2456,13 @@
   .showcase-gallery,
   .showcase-form-grid {
     grid-template-columns: 1fr;
+  }
+  .showcase-build-track {
+    gap: 14px;
+    padding-right: 36px;
+  }
+  .showcase-build-track .showcase-build-card {
+    flex-basis: min(82vw, 480px);
   }
   .showcase-gallery figure.wide {
     grid-column: auto;
