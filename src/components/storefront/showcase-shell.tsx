@@ -156,20 +156,67 @@ export function ShowcaseFooter({ config }: { config: StorefrontConfig }) {
 }
 
 export function BuildCard({ product }: { product: StorefrontProduct }) {
+  const mediaTrack = useRef<HTMLDivElement>(null);
+  const images = useMemo(() => {
+    const saved = [product.imageUrl, ...product.imageUrls].filter(
+      (value): value is string => Boolean(value),
+    );
+    const unique = [...new Set(saved)];
+    const testImages = [
+      "/showcase/demo-cyan-pc.webp",
+      "/showcase/demo-white-pc.webp",
+      "/showcase/build-1-cooling.webp",
+    ];
+    for (const image of testImages) {
+      if (unique.length >= 4) break;
+      if (!unique.includes(image)) unique.push(image);
+    }
+    return unique.length ? unique : ["/showcase/build-1-main.webp"];
+  }, [product.imageUrl, product.imageUrls]);
+
+  function moveMedia(direction: -1 | 1) {
+    const image = mediaTrack.current?.querySelector<HTMLElement>("img");
+    mediaTrack.current?.scrollBy({
+      left: direction * ((image?.offsetWidth ?? 420) + 10),
+      behavior: "smooth",
+    });
+  }
+
   return (
     <article className="showcase-build-card">
       <div className="showcase-build-image">
-        {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.imageUrl} alt={product.imageAlt ?? product.name} />
-        ) : (
-          <Image
-            src="/showcase/build-1-main.webp"
-            alt="Nextech completed PC build"
-            fill
-            sizes="(max-width: 700px) 100vw, 50vw"
-          />
-        )}
+        <div className="showcase-build-media-track" ref={mediaTrack}>
+          {images.map((src, index) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`${src}-${index}`}
+              src={src}
+              alt={
+                index === 0
+                  ? (product.imageAlt ?? product.name)
+                  : `${product.name} image ${index + 1}`
+              }
+            />
+          ))}
+        </div>
+        {images.length > 1 ? (
+          <div className="showcase-build-media-controls">
+            <button
+              type="button"
+              onClick={() => moveMedia(-1)}
+              aria-label={`Previous image for ${product.name}`}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              onClick={() => moveMedia(1)}
+              aria-label={`Next image for ${product.name}`}
+            >
+              →
+            </button>
+          </div>
+        ) : null}
         {product.tag ? <span>{product.tag}</span> : null}
       </div>
       <div className="showcase-build-copy">
@@ -185,43 +232,6 @@ export function BuildCard({ product }: { product: StorefrontProduct }) {
         </div>
       </div>
     </article>
-  );
-}
-
-function BuildCarousel({ products }: { products: StorefrontProduct[] }) {
-  const track = useRef<HTMLDivElement>(null);
-
-  function move(direction: -1 | 1) {
-    const card = track.current?.querySelector<HTMLElement>(
-      ".showcase-build-card",
-    );
-    track.current?.scrollBy({
-      left: direction * ((card?.offsetWidth ?? 560) + 20),
-      behavior: "smooth",
-    });
-  }
-
-  return (
-    <div className="showcase-build-carousel">
-      <div className="showcase-build-track" ref={track}>
-        {products.map((product) => (
-          <BuildCard key={product.id} product={product} />
-        ))}
-      </div>
-      <div className="showcase-build-controls">
-        <button
-          type="button"
-          onClick={() => move(-1)}
-          aria-label="Previous build"
-        >
-          ←
-        </button>
-        <button type="button" onClick={() => move(1)} aria-label="Next build">
-          →
-        </button>
-        <span>DRAG OR SCROLL TO EXPLORE</span>
-      </div>
-    </div>
   );
 }
 
@@ -276,27 +286,6 @@ export function ShowcaseHome({
   }, [products]);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const buildCarouselProducts = useMemo(() => {
-    if (!products.length) return [];
-    const demoImages = [
-      "/showcase/demo-cyan-pc.webp",
-      "/showcase/demo-white-pc.webp",
-      "/showcase/build-1-cooling.webp",
-    ];
-    const items = [...products];
-    for (let index = 0; items.length < 5; index += 1) {
-      const source = products[index % products.length];
-      items.push({
-        ...source,
-        id: `${source.id}-carousel-demo-${index}`,
-        name: `${source.name} · Preview ${index + 1}`,
-        imageUrl: demoImages[index % demoImages.length],
-        imageAlt: `Temporary custom PC carousel preview ${index + 1}`,
-        tag: "Carousel preview",
-      });
-    }
-    return items;
-  }, [products]);
 
   useEffect(() => {
     if (slides.length < 2 || paused) return;
@@ -412,15 +401,11 @@ export function ShowcaseHome({
               Completed PCs designed, assembled and tested by Nextech.
             </span>
           </div>
-          <div
-            className={
-              products.length
-                ? "showcase-build-carousel-wrap"
-                : "showcase-build-grid"
-            }
-          >
+          <div className="showcase-build-grid">
             {products.length ? (
-              <BuildCarousel products={buildCarouselProducts} />
+              products.map((product) => (
+                <BuildCard key={product.id} product={product} />
+              ))
             ) : (
               <>
                 <article className="showcase-placeholder">
