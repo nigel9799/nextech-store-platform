@@ -382,6 +382,9 @@ a {
   cursor: wait;
 }
 .auth-links {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
   margin-top: 20px;
   font-size: 13px;
 }

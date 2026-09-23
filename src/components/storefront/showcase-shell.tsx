@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   StorefrontConfig,
   StorefrontProduct,
@@ -188,6 +188,43 @@ export function BuildCard({ product }: { product: StorefrontProduct }) {
   );
 }
 
+function BuildCarousel({ products }: { products: StorefrontProduct[] }) {
+  const track = useRef<HTMLDivElement>(null);
+
+  function move(direction: -1 | 1) {
+    const card = track.current?.querySelector<HTMLElement>(
+      ".showcase-build-card",
+    );
+    track.current?.scrollBy({
+      left: direction * ((card?.offsetWidth ?? 560) + 20),
+      behavior: "smooth",
+    });
+  }
+
+  return (
+    <div className="showcase-build-carousel">
+      <div className="showcase-build-track" ref={track}>
+        {products.map((product) => (
+          <BuildCard key={product.id} product={product} />
+        ))}
+      </div>
+      <div className="showcase-build-controls">
+        <button
+          type="button"
+          onClick={() => move(-1)}
+          aria-label="Previous build"
+        >
+          ←
+        </button>
+        <button type="button" onClick={() => move(1)} aria-label="Next build">
+          →
+        </button>
+        <span>DRAG OR SCROLL TO EXPLORE</span>
+      </div>
+    </div>
+  );
+}
+
 export function ShowcaseHome({
   config,
   products,
@@ -239,6 +276,27 @@ export function ShowcaseHome({
   }, [products]);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const buildCarouselProducts = useMemo(() => {
+    if (!products.length) return [];
+    const demoImages = [
+      "/showcase/demo-cyan-pc.webp",
+      "/showcase/demo-white-pc.webp",
+      "/showcase/build-1-cooling.webp",
+    ];
+    const items = [...products];
+    for (let index = 0; items.length < 5; index += 1) {
+      const source = products[index % products.length];
+      items.push({
+        ...source,
+        id: `${source.id}-carousel-demo-${index}`,
+        name: `${source.name} · Preview ${index + 1}`,
+        imageUrl: demoImages[index % demoImages.length],
+        imageAlt: `Temporary custom PC carousel preview ${index + 1}`,
+        tag: "Carousel preview",
+      });
+    }
+    return items;
+  }, [products]);
 
   useEffect(() => {
     if (slides.length < 2 || paused) return;
@@ -354,11 +412,15 @@ export function ShowcaseHome({
               Completed PCs designed, assembled and tested by Nextech.
             </span>
           </div>
-          <div className="showcase-build-grid">
+          <div
+            className={
+              products.length
+                ? "showcase-build-carousel-wrap"
+                : "showcase-build-grid"
+            }
+          >
             {products.length ? (
-              products.map((product) => (
-                <BuildCard key={product.id} product={product} />
-              ))
+              <BuildCarousel products={buildCarouselProducts} />
             ) : (
               <>
                 <article className="showcase-placeholder">
