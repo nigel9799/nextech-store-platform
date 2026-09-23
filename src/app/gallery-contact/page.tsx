@@ -65,9 +65,7 @@ export default async function GalleryContactPage() {
                 )}
                 <figcaption>
                   <span>{image.name}</span>
-                  <small>
-                    {image.slug ? "VIEW CASE STUDY →" : "VIEW IMAGE →"}
-                  </small>
+                  <small>{image.slug ? "VIEW BUILD →" : "VIEW IMAGE →"}</small>
                 </figcaption>
               </figure>
             </Link>

@@ -33,7 +33,11 @@ export default async function NewProductPage({
       ) : null}
       {categories?.length ? (
         <section className="admin-panel">
-          <ProductForm action={createProductAction} categories={categories} />
+          <ProductForm
+            action={createProductAction}
+            categories={categories}
+            preserveDraft={Boolean(query.error)}
+          />
         </section>
       ) : (
         <section className="admin-placeholder">

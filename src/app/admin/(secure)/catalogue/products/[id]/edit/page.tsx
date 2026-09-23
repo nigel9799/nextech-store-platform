@@ -55,6 +55,7 @@ export default async function EditProductPage({
         <ProductForm
           action={updateProductAction}
           categories={categories ?? []}
+          preserveDraft={Boolean(query.error)}
           product={{
             ...product,
             imageUrls: (images ?? []).map((image) => image.storage_path),
