@@ -169,7 +169,7 @@ const productSchema = z.object({
   tag: z.string().trim().max(40),
   existingImageUrls: z.string().trim().max(6000),
   externalImageUrls: z.string().trim().max(4000),
-  showInGallery: z.boolean(),
+  addImagesToGallery: z.boolean(),
 });
 
 const acceptedImageTypes = new Set([
@@ -252,6 +252,37 @@ async function saveProductImage(
   return error;
 }
 
+async function addProductImagesToGallery(
+  productId: string,
+  tenantId: string,
+  imageUrls: string[],
+  title: string,
+) {
+  if (!imageUrls.length) return null;
+  const supabase = await createClient();
+  const { data: last } = await supabase
+    .from("gallery_images")
+    .select("display_order")
+    .eq("tenant_id", tenantId)
+    .order("display_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const start = (last?.display_order ?? -1) + 1;
+  const { error } = await supabase.from("gallery_images").upsert(
+    imageUrls.map((storagePath, index) => ({
+      tenant_id: tenantId,
+      source_product_id: productId,
+      storage_path: storagePath,
+      title,
+      alt_text: `${title} photo ${index + 1}`,
+      display_order: start + index,
+      status: "published",
+    })),
+    { onConflict: "tenant_id,storage_path", ignoreDuplicates: true },
+  );
+  return error;
+}
+
 function readProduct(formData: FormData) {
   const parsed = productSchema.safeParse({
     name: formData.get("name"),
@@ -266,7 +297,7 @@ function readProduct(formData: FormData) {
     tag: formData.get("tag") ?? "",
     existingImageUrls: formData.get("existingImageUrls") ?? "",
     externalImageUrls: formData.get("externalImageUrls") ?? "",
-    showInGallery: formData.get("showInGallery") === "on",
+    addImagesToGallery: formData.get("addImagesToGallery") === "on",
   });
   const order = parseOptionalOrder(formData.get("displayOrder"));
   const files = imageFiles(formData);
@@ -340,7 +371,7 @@ export async function createProductAction(formData: FormData) {
       currency_code: "EUR",
       status: product.status,
       tag: product.tag || null,
-      show_in_gallery: product.showInGallery,
+      show_in_gallery: false,
       display_order:
         product.order ?? (await nextOrder("products", context.tenant.id)),
     })
@@ -378,6 +409,20 @@ export async function createProductAction(formData: FormData) {
       "error",
       "image-failed",
     );
+  if (product.addImagesToGallery) {
+    const galleryError = await addProductImagesToGallery(
+      data.id,
+      context.tenant.id,
+      imageUrls,
+      product.name,
+    );
+    if (galleryError)
+      destination(
+        `/admin/catalogue/products/${data.id}/edit`,
+        "error",
+        "gallery-failed",
+      );
+  }
   refreshCatalogue();
   destination("/admin/catalogue/products", "notice", "created");
 }
@@ -402,7 +447,6 @@ export async function updateProductAction(formData: FormData) {
       old_price_minor: product.oldPriceMinor,
       status: product.status,
       tag: product.tag || null,
-      show_in_gallery: product.showInGallery,
       display_order: product.order,
     })
     .eq("id", id.data)
@@ -435,6 +479,20 @@ export async function updateProductAction(formData: FormData) {
       "error",
       "image-failed",
     );
+  if (product.addImagesToGallery) {
+    const galleryError = await addProductImagesToGallery(
+      id.data,
+      context.tenant.id,
+      imageUrls,
+      product.name,
+    );
+    if (galleryError)
+      destination(
+        `/admin/catalogue/products/${id.data}/edit`,
+        "error",
+        "gallery-failed",
+      );
+  }
   refreshCatalogue();
   destination("/admin/catalogue/products", "notice", "updated");
 }

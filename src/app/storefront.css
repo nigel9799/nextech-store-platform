@@ -2578,7 +2578,7 @@
   }
 }
 
-/* Production carousel: square covers travel horizontally around a shallow arc. */
+/* Production carousel: square covers travel on one clean horizontal track. */
 .showcase-site .showcase-carousel-stage {
   position: relative;
   display: block;
@@ -2607,8 +2607,6 @@
     brightness(calc(1 - var(--card-distance) * 0.1));
   transform: translate(-50%, -50%)
     translateX(calc(var(--card-offset) * clamp(84px, 10vw, 142px)))
-    translateY(calc(var(--card-distance) * 24px))
-    rotate(calc(var(--card-offset) * 5deg))
     scale(calc(1 - var(--card-distance) * 0.085));
   transition:
     transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -2623,7 +2621,7 @@
     0 34px 82px rgb(0 0 0 / 72%),
     0 0 0 1px rgb(123 209 226 / 22%);
   filter: saturate(1.06) brightness(1);
-  transform: translate(-50%, -56%) rotate(0) scale(1.1);
+  transform: translate(-50%, -50%) translateX(0) scale(1.1);
 }
 .showcase-site .showcase-carousel-panel > img,
 .showcase-site .showcase-carousel-panel.is-active > img {
@@ -2648,11 +2646,9 @@
     --square-size: min(64vw, 255px);
     min-width: 0;
     transform: translate(-50%, -50%) translateX(calc(var(--card-offset) * 34vw))
-      translateY(calc(var(--card-distance) * 18px))
-      rotate(calc(var(--card-offset) * 4deg))
       scale(calc(1 - var(--card-distance) * 0.1));
   }
   .showcase-site .showcase-carousel-panel.is-active {
-    transform: translate(-50%, -55%) scale(1.06);
+    transform: translate(-50%, -50%) translateX(0) scale(1.06);
   }
 }

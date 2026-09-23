@@ -13,16 +13,11 @@ export const dynamic = "force-dynamic";
 
 export default async function GalleryContactPage() {
   const storefront = await getStorefrontData();
-  const gallery = storefront.products
-    .filter((product) => product.showInGallery)
-    .flatMap((product) =>
-      product.imageUrls.map((src, index) => ({
-        src,
-        alt: `${product.name} photo ${index + 1}`,
-        name: product.name,
-        slug: product.slug,
-      })),
-    );
+  const gallery = storefront.galleryImages.map((image) => ({
+    ...image,
+    name: image.title ?? "Nextech build",
+    slug: image.buildSlug,
+  }));
   const images = gallery.length
     ? gallery
     : starterSlides.map((image, index) => ({
@@ -52,7 +47,10 @@ export default async function GalleryContactPage() {
         </section>
         <section className="showcase-gallery" id="gallery">
           {images.map((image, index) => (
-            <Link href={`/builds/${image.slug}`} key={`${image.src}-${index}`}>
+            <Link
+              href={image.slug ? `/builds/${image.slug}` : image.src}
+              key={`${image.src}-${index}`}
+            >
               <figure>
                 {image.src.startsWith("/") ? (
                   <Image
@@ -67,7 +65,9 @@ export default async function GalleryContactPage() {
                 )}
                 <figcaption>
                   <span>{image.name}</span>
-                  <small>VIEW CASE STUDY →</small>
+                  <small>
+                    {image.slug ? "VIEW CASE STUDY →" : "VIEW IMAGE →"}
+                  </small>
                 </figcaption>
               </figure>
             </Link>

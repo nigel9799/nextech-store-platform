@@ -232,38 +232,61 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       config: defaultStorefrontConfig,
       categories: [],
       products: previewProducts,
+      galleryImages: previewProducts.flatMap((product) =>
+        product.imageUrls.map((src, index) => ({
+          id: `${product.id}-${index}`,
+          src,
+          alt: `${product.name} photo ${index + 1}`,
+          title: product.name,
+          buildSlug: product.slug,
+          displayOrder: index,
+        })),
+      ),
       legalPages: [],
     };
   }
   const tenant = await resolveRequestTenant();
   const service = createServiceRoleClient();
-  const [settingsResult, categoriesResult, initialProductsResult, legalResult] =
-    await Promise.all([
-      service
-        .from("site_settings")
-        .select("settings")
-        .eq("tenant_id", tenant.id)
-        .maybeSingle(),
-      service
-        .from("product_categories")
-        .select("id, slug, name, display_order")
-        .eq("tenant_id", tenant.id)
-        .eq("is_visible", true)
-        .order("display_order"),
-      service
-        .from("products")
-        .select(
-          "id, category_id, slug, name, sku, short_spec, description, price_minor, old_price_minor, currency_code, tag, show_in_gallery, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
-        )
-        .eq("tenant_id", tenant.id)
-        .eq("status", "live")
-        .order("display_order"),
-      service
-        .from("legal_pages")
-        .select("kind, title, body")
-        .eq("tenant_id", tenant.id)
-        .eq("is_published", true),
-    ]);
+  const [
+    settingsResult,
+    categoriesResult,
+    initialProductsResult,
+    galleryResult,
+    legalResult,
+  ] = await Promise.all([
+    service
+      .from("site_settings")
+      .select("settings")
+      .eq("tenant_id", tenant.id)
+      .maybeSingle(),
+    service
+      .from("product_categories")
+      .select("id, slug, name, display_order")
+      .eq("tenant_id", tenant.id)
+      .eq("is_visible", true)
+      .order("display_order"),
+    service
+      .from("products")
+      .select(
+        "id, category_id, slug, name, sku, short_spec, description, price_minor, old_price_minor, currency_code, tag, show_in_gallery, display_order, category:product_categories!inner(slug, name, is_visible), images:product_images(storage_path, alt_text, display_order, is_primary, status)",
+      )
+      .eq("tenant_id", tenant.id)
+      .eq("status", "live")
+      .order("display_order"),
+    service
+      .from("gallery_images")
+      .select(
+        "id, storage_path, alt_text, title, display_order, source:products(slug)",
+      )
+      .eq("tenant_id", tenant.id)
+      .eq("status", "published")
+      .order("display_order"),
+    service
+      .from("legal_pages")
+      .select("kind, title, body")
+      .eq("tenant_id", tenant.id)
+      .eq("is_published", true),
+  ]);
   let productRows: unknown[] = initialProductsResult.data ?? [];
   let productError = initialProductsResult.error;
   if (
@@ -281,10 +304,13 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     productRows = legacyProductsResult.data ?? [];
     productError = legacyProductsResult.error;
   }
+  const galleryTableMissing = galleryResult.error?.code === "42P01";
   const firstError =
     [settingsResult, categoriesResult, legalResult].find(
       (result) => result.error,
-    )?.error ?? productError;
+    )?.error ??
+    productError ??
+    (galleryTableMissing ? null : galleryResult.error);
   if (firstError)
     throw new Error(
       `Storefront data could not be loaded: ${firstError.message}`,
@@ -302,6 +328,41 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       ]
     : defaultStorefrontCategories;
   const mappedProducts = mapProducts(productRows);
+  const standaloneGallery = (galleryResult.data ?? []).flatMap((row) => {
+    const source = Array.isArray(row.source) ? row.source[0] : row.source;
+    if (
+      typeof row.id !== "string" ||
+      typeof row.storage_path !== "string" ||
+      typeof row.alt_text !== "string" ||
+      typeof row.display_order !== "number"
+    )
+      return [];
+    return [
+      {
+        id: row.id,
+        src: row.storage_path,
+        alt: row.alt_text,
+        title: typeof row.title === "string" ? row.title : null,
+        buildSlug:
+          source && typeof source === "object" && "slug" in source
+            ? String(source.slug)
+            : null,
+        displayOrder: row.display_order,
+      },
+    ];
+  });
+  const legacyGallery = mappedProducts
+    .filter((product) => product.showInGallery)
+    .flatMap((product) =>
+      product.imageUrls.map((src, index) => ({
+        id: `${product.id}-${index}`,
+        src,
+        alt: `${product.name} photo ${index + 1}`,
+        title: product.name,
+        buildSlug: product.slug,
+        displayOrder: product.displayOrder * 20 + index,
+      })),
+    );
   const config = mergeConfig(settingsResult.data?.settings);
   const legalPages: StorefrontLegalPage[] = (legalResult.data ?? []).flatMap(
     (page) => {
@@ -331,6 +392,10 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       mappedProducts.length || !isDevelopment
         ? mappedProducts
         : developmentSeedProducts,
+    galleryImages:
+      standaloneGallery.length || !galleryTableMissing
+        ? standaloneGallery
+        : legacyGallery,
     legalPages,
   };
 }
